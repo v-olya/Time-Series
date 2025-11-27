@@ -1,0 +1,18 @@
+# Node modules for the web app
+/web/node_modules/
+
+# Next.js build outputs
+/web/.next/
+/web/out/
+
+# Editor folders
+.vscode/
+.idea/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# OS
+.DS_Store
+Thumbs.db
