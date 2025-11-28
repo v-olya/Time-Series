@@ -66,8 +66,9 @@ def process_file(name: str, path: Path):
 
     series_dict = {}
     for col in numeric.columns:
-        col_series = numeric[col].astype(float)
-        series_dict[col] = to_iso(col_series)
+        if col != target_col:
+            col_series = numeric[col].astype(float)
+            series_dict[col] = to_iso(col_series)
 
     out = {
         "meta": {"series": target_col, "start": time_series[0]["date"], "end": time_series[-1]["date"], "freq": "MS"},
