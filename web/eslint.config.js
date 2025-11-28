@@ -34,7 +34,7 @@ module.exports = [
       'semi': ['warn', 'always'],
       'comma-dangle': ['warn', 'always-multiline'],
       'indent': ['warn', 2, { SwitchCase: 1 }],
-      'max-len': ['warn', { code: 100 }],
+      'max-len': ['warn', { code: 150 }],
       'arrow-parens': ['warn', 'always'],
       'linebreak-style': ['warn', 'unix'],
       // React settings

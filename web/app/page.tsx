@@ -60,9 +60,12 @@ export default function HomePage() {
     <div className="container">
       <div className="heading txt-c">
         <h1>Real-life time series analysis and forecasting</h1>
-        <h2 className="subheading">Product prices in Czech Republic,&nbsp; 2013 &ndash; 2025</h2>
+        <h2 className="subheading">Product prices in &nbsp;2013 &ndash; 2025</h2>
         <h3>Data source:{' '}
-          <a className="blue-link" href="https://data.gov.cz/dataset?iri=https%3A%2F%2Fdata.gov.cz%2Fzdroj%2Fdatov%C3%A9-sady%2F00025593%2F02f3decfbfdabecebd4c0548f55390a0">
+          <a 
+            className="blue-link" 
+            href="https://data.gov.cz/dataset?iri=https%3A%2F%2Fdata.gov.cz%2Fzdroj%2Fdatov%C3%A9-sady%2F00025593%2F02f3decfbfdabecebd4c0548f55390a0"
+            target="_blank" rel="noopener noreferrer">
                 Czech Data Portal
           </a>
         </h3>
