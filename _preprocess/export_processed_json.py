@@ -62,7 +62,7 @@ def process_file(name: str, path: Path):
     acf_vals = acf(series.dropna(), nlags=36, fft=False)
     lags = list(range(len(acf_vals)))
 
-    observed = to_iso(series)
+    time_series = to_iso(series)
 
     series_dict = {}
     for col in numeric.columns:
@@ -70,8 +70,8 @@ def process_file(name: str, path: Path):
         series_dict[col] = to_iso(col_series)
 
     out = {
-        "meta": {"series": target_col, "start": observed[0]["date"], "end": observed[-1]["date"], "freq": "MS"},
-        "observed": observed,
+        "meta": {"series": target_col, "start": time_series[0]["date"], "end": time_series[-1]["date"], "freq": "MS"},
+        "timeSeries": time_series,
         "series": series_dict,
         "scaled": to_iso(series_scaled),
         "rolling": {"ma_12": to_iso(rolling_mean_12), "std_12": to_iso(rolling_std_12)},

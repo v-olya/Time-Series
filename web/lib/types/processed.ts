@@ -7,7 +7,7 @@ export type Decomposition = {
 };
 export type ProcessedData = {
   meta?: { series?: string; category?: string };
-  observed: TimePoint[];
+  timeSeries: TimePoint[];
   forecast?: TimePoint[];
   series?: SeriesMap;
   decomposition?: Decomposition;
