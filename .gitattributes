@@ -1,0 +1,14 @@
+# Enforce LF line endings in the repository
+* text=auto eol=lf
+
+# Keep Windows-specific scripts with CRLF
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+
+# Treat common binary files as binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+
