@@ -2,12 +2,11 @@ const tsPlugin = require('@typescript-eslint/eslint-plugin');
 const reactPlugin = require('eslint-plugin-react');
 const reactHooksPlugin = require('eslint-plugin-react-hooks');
 const jsxA11yPlugin = require('eslint-plugin-jsx-a11y');
-const prettierPlugin = require('eslint-plugin-prettier');
 
 module.exports = [
   // top-level ignores
   {
-    ignores: ['node_modules/', '.next/', 'public/static/'],
+    ignores: ['node_modules/', '.next/', 'public/static/', 'next-env.d.ts'],
   },
   // apply rules to JS/TS files using flat config (no `extends`)
   {
@@ -26,10 +25,18 @@ module.exports = [
       react: reactPlugin,
       'react-hooks': reactHooksPlugin,
       'jsx-a11y': jsxA11yPlugin,
-      prettier: prettierPlugin,
+      // no prettier plugin; ESLint core rules below implement formatting
     },
     rules: {
-      'prettier/prettier': 'warn',
+      // Formatting rules translated from `.prettierrc` to ESLint rules.
+      // ESLint autofix will apply these on save.
+      'quotes': ['warn', 'single', { avoidEscape: true }],
+      'semi': ['warn', 'always'],
+      'comma-dangle': ['warn', 'always-multiline'],
+      'indent': ['warn', 2, { SwitchCase: 1 }],
+      'max-len': ['warn', { code: 100 }],
+      'arrow-parens': ['warn', 'always'],
+      'linebreak-style': ['warn', 'unix'],
       // React settings
       'react/react-in-jsx-scope': 'off',
       'react/jsx-uses-react': 'off',
