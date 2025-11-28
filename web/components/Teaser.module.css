@@ -1,24 +1,51 @@
 .teaser {
-  border: 1px solid #ddd;
-  padding: 12px;
-  width: 320px;
+  border: 1px solid var(--border);
+  padding: 0.9rem;
+  width: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   box-sizing: border-box;
-  background: #fff;
+  background: var(--bg);
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 4px var(--shadow-1);
+  transition: transform 120ms ease, box-shadow 120ms ease;
+  min-height: 200px;
+  min-width: 0;
 }
 .title {
-  margin: 0 0 8px 0;
-  font-size: 1rem;
+  margin: 0 0 0.5rem 0;
+  font-weight: 600;
 }
 .latest {
-  margin-bottom: 8px;
+  margin-bottom: 0.5rem;
+  color: var(--muted);
 }
 .plot {
   height: 100px;
   width: 100%;
 }
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.2rem;
+}
+
 .linkWrap {
-  margin-top: 8px;
+  margin: 0;
+  display: block;
+}
+
+.teaser:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px var(--shadow-2);
+}
+
+.composite {
+  color: var(--plotly-red);
+}
+
+.product {
+  color: var(--plotly-green);
 }

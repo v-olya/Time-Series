@@ -1,3 +1,4 @@
+'use client';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import React from 'react';
@@ -12,11 +13,12 @@ type Props = {
   href: string;
   series: ProcessedData;
   windowMonths?: number;
+  showFullAnalysis?: boolean;
 };
 
-export default function Teaser({ title, href, series, windowMonths = 36 }: Props) {
-  const last = series.observed[series.observed.length - 1] as TimePoint | undefined;
-  const sparkSlice = series.observed.slice(-windowMonths) as TimePoint[];
+export default function Teaser({ title, href, series, windowMonths = 36, showFullAnalysis = false }: Props) {
+  const last = series.timeSeries[series.timeSeries.length - 1] as TimePoint | undefined;
+  const sparkSlice = series.timeSeries.slice(-windowMonths) as TimePoint[];
   const sparkX = sparkSlice.map((d) => d.date);
   const sparkY = sparkSlice.map((d) => d.value);
 
@@ -33,7 +35,22 @@ export default function Teaser({ title, href, series, windowMonths = 36 }: Props
 
   return (
     <div className={styles.teaser}>
-      <h4 className={styles.title}>{title}</h4>
+      <div className={styles.headerRow}>
+        {(() => {
+          const isComposite = title === 'Index';
+          return (
+            <h4 className={`${styles.title} ${isComposite ? styles.composite : styles.product}`}>
+              {title}
+            </h4>
+          );
+        })()}
+        {showFullAnalysis && (
+          <div className={styles.linkWrap}>
+            <Link href={href} className="blue-link">Full analysis →</Link>
+          </div>
+        )}
+      </div>
+
       <div className={styles.latest}>
         Latest: <strong>{last?.value?.toFixed ? last.value.toFixed(2) : last?.value}</strong> (
         {last?.date})
@@ -41,12 +58,17 @@ export default function Teaser({ title, href, series, windowMonths = 36 }: Props
 
       <div className={styles.plot}>
         <Plot
-          data={[scatterTrace(sparkX, sparkY, undefined, undefined)]}
+          data={[scatterTrace(sparkX, sparkY, '', 1)]}
           layout={{
             height: 100,
             margin: { t: 8, b: 28, l: 36, r: 8 },
             autosize: true,
-            xaxis: { type: 'date', range: [firstX, endRange], tickformat: '%b %Y', nticks: 4 },
+            xaxis: {
+              type: 'date',
+              range: [firstX, endRange],
+              tickformat: '%b %Y',
+              nticks: 4,
+            },
             yaxis: { automargin: true, zeroline: false },
           }}
           useResizeHandler
@@ -55,9 +77,7 @@ export default function Teaser({ title, href, series, windowMonths = 36 }: Props
         />
       </div>
 
-      <div className={styles.linkWrap}>
-        <Link href={href}>Open {title}</Link>
-      </div>
+      {/* link moved into headerRow to align with title */}
     </div>
   );
 }
