@@ -15,5 +15,4 @@ Output:
 
 - `web/public/data/processed/{dairy,eggs,flour}_eda.json`
 
-Files produced include the main time series (`timeSeries`), scaled series, 12-month rolling mean/std,
-STL decomposition components, and ACF values. Forecast placeholders are left empty.
+Files produced include the main time series (`timeSeries`), scaled series, 12-month rolling mean/std, STL decomposition components, and ACF values.

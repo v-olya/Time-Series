@@ -1,8 +1,8 @@
-import '../styles.css';
+import '../styles/global.css';
 
 export const metadata = {
-  title: 'Stats Dashboard',
-  description: 'Time series dashboard for dairy, eggs, and flour',
+  title: 'Stats on raw materials for bakery products',
+  description: 'Time series evaluation for dairy, eggs, and flour',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
