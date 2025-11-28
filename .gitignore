@@ -4,6 +4,7 @@
 # Next.js build outputs
 /web/.next/
 /web/out/
+/web/tsconfig.tsbuildinfo
 
 # Editor folders
 .vscode/
