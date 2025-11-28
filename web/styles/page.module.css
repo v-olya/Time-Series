@@ -1,0 +1,9 @@
+.section {
+  margin-top: 16px;
+}
+.sectionSmall {
+  margin-top: 12px;
+}
+.fullWidth {
+  width: 100%;
+}
