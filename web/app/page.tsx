@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import Teaser from '../components/Teaser';
 import TeaserGroup from '../components/TeaserGroup';
+import PriceLegend from '../components/PriceLegend';
 import type { ProcessedData, SeriesMap, TimePoint } from '../lib/types/processed';
 
 export default function HomePage() {
@@ -41,7 +42,6 @@ export default function HomePage() {
   };
 
   const flourSeries = (flour?.series ?? {}) as SeriesMap;
-  // Use S-column for flour product teaser (end-consumer price)
   const flourKeyS = 'S  pšeničná mouka hladká [kg]_timeseries';
   const flourDataS: ProcessedData = {
     timeSeries: (flourSeries[flourKeyS] || []) as TimePoint[],
@@ -70,7 +70,7 @@ export default function HomePage() {
           </a>
         </h3>
       </div>
-
+      <PriceLegend />
       <TeaserGroup
         heading="Dairy products"
         teasers={[

@@ -1,0 +1,11 @@
+.legend {
+  border: 2px solid #e6eef9;
+  background: #f8fbff;
+  padding: 0 1rem;
+  margin: 0.5rem auto;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  color: #111827;
+  max-width: 600px;
+}
+.legend li { margin: 4px 0; }
