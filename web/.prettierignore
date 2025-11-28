@@ -4,3 +4,4 @@ dist/
 build/
 public/static/
 *.min.js
+next-env.d.ts
