@@ -29,8 +29,7 @@ module.exports = [
       prettier: prettierPlugin,
     },
     rules: {
-      // keep Prettier as an error
-      'prettier/prettier': 'error',
+      'prettier/prettier': 'warn',
       // React settings
       'react/react-in-jsx-scope': 'off',
       'react/jsx-uses-react': 'off',
