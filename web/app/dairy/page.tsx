@@ -3,6 +3,7 @@ import path from 'path';
 import type { ProcessedData } from '../../lib/types/processed';
 import { DairyAcrossChannels } from 'components/DairyAcrossChannels';
 import { MilkAcrossChannels } from 'components/MilkAcrossChannels';
+import DairyHeatmap from 'components/DairyHeatmap';
 
 export default function DairyPage() {
   const filePath = path.join(process.cwd(), 'public', 'data', 'processed', 'dairy_eda.json');
@@ -10,6 +11,8 @@ export default function DairyPage() {
   const data = JSON.parse(raw) as ProcessedData;
 
   return <>
+    <MilkAcrossChannels data={data} height={600} />
     <DairyAcrossChannels data={data} height={600} />
-    <MilkAcrossChannels data={data} height={600} /></>;
+    <DairyHeatmap data={data} height={600} />
+  </>;
 }
