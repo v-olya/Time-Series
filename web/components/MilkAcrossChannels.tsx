@@ -3,7 +3,7 @@
 import React, { useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import type { ProcessedData, TimePoint } from '../lib/types/processed';
-import { Select } from './Select';
+import { Select } from './UI/Select';
 import { aggregationOptions, intervalOptions, getPalette, plotLegend, plotMargin } from 'lib/const';
 import aggregateSeries, { AggregationMethod, TimeInterval } from 'lib/aggregator';
 

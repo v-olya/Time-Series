@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import Teaser from '../components/Teaser';
-import TeaserGroup from '../components/TeaserGroup';
+import Teaser from '../components/UI/Teaser';
+import TeaserGroup from '../components/UI/TeaserGroup';
 import PriceLegend from '../components/PriceLegend';
 import type { ProcessedData, SeriesMap, TimePoint } from '../lib/types/processed';
 

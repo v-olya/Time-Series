@@ -1,5 +1,5 @@
 import Teaser from './Teaser';
-import type { ProcessedData } from '../lib/types/processed';
+import type { ProcessedData } from '../../lib/types/processed';
 
 type TeaserItem = {
   title: string;
