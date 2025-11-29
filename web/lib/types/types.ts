@@ -13,3 +13,4 @@ export type ProcessedData = {
   decomposition?: Decomposition;
   rolling?: Record<string, TimePoint[]>;
 };
+export type MilkChannelsKey = 'milk_p' | 'milk_s' | 'milk_z';

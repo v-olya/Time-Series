@@ -3,7 +3,7 @@ import path from 'path';
 import Teaser from '../components/UI/Teaser';
 import TeaserGroup from '../components/UI/TeaserGroup';
 import PriceLegend from '../components/PriceLegend';
-import type { ProcessedData, SeriesMap, TimePoint } from '../lib/types/processed';
+import type { ProcessedData, SeriesMap, TimePoint } from '../lib/types/types';
 
 export default function HomePage() {
   const readJson = (name: string): ProcessedData | null => {

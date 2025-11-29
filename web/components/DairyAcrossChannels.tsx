@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
-import type { ProcessedData, TimePoint } from '../lib/types/processed';
+import type { ProcessedData, TimePoint } from '../lib/types/types';
 import { Select } from './UI/Select';
 import { MultiSelect } from './UI/MultiSelect';
 import { aggregationOptions, intervalOptions, getPalette, plotLegend, plotMargin, plotTitle } from 'lib/const';

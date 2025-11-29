@@ -1,4 +1,4 @@
-import type { TimePoint } from './types/processed';
+import type { TimePoint } from './types/types';
 
 export type AggregationMethod = 'raw' | 'average' | 'sum' | 'min' | 'max' | 'median' | 'p95';
 export type TimeInterval = 'month' | 'quarter' | 'year';

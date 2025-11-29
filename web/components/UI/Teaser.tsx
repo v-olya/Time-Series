@@ -3,7 +3,7 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import React from 'react';
 import styles from './Teaser.module.css';
-import type { ProcessedData, TimePoint } from '../../lib/types/processed';
+import type { ProcessedData, TimePoint } from '../../lib/types/types';
 import { scatterTrace } from '../../lib/plot';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });

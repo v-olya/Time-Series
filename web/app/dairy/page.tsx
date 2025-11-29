@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import type { ProcessedData } from '../../lib/types/processed';
+import type { ProcessedData } from '../../lib/types/types';
 import { DairyAcrossChannels } from 'components/DairyAcrossChannels';
 import { MilkAcrossChannels } from 'components/MilkAcrossChannels';
 import DairyHeatmap from 'components/DairyHeatmap';
