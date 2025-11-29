@@ -77,14 +77,19 @@ h4 {
 .group {
   margin: 2.5em auto;
   /* Constrain group width so the heading lines up with the centered cards */
-  max-width: 900px;
   padding-left: 1rem;
   padding-right: 1rem;
 }
+
 .group h3 {
   margin-left: 0.9rem;
   font-size: 1.4rem;
 }
+
+.container .group {
+  max-width: 900px;
+}
+
 .cards-grid {
   display: grid;
   /* Limit to at most 2 columns; each column will be at least 320px wide */
@@ -103,7 +108,7 @@ h4 {
 .plot-container {
   margin: 0 auto;
   padding: 1rem;
-  max-width: 900px;
+  max-width: 1200px;
 }
 
 .plot-controls {
