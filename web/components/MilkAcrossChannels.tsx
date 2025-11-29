@@ -96,8 +96,7 @@ export function MilkAcrossChannels({ data, height = 500 }: Props) {
           layout={{
             height,
             title: { text: '<b>Plain Milk Prices Across Distribution Channels</b>', font: { family: 'Montserrat, Arial, sans-serif', size: 20 } },
-            xaxis: { title: { text: 'Month' } },
-            yaxis: { title: { text: 'Price (CZK)' } },
+            yaxis: { title: { text: 'Price per kg (CZK)' } },
             hovermode: 'x unified' as const,
             showlegend: true,
             legend: plotLegend,
