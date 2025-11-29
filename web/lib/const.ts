@@ -49,5 +49,7 @@ export const plotLegend = {
   bordercolor: '#ccc',
   borderwidth: 1,
 };
-
 export const plotMargin = { l: 90, r: 30, t: 90, b: 80 };
+export const plotTitle =  { family: 'Montserrat, Arial, sans-serif', size: 20 };
+
+export const MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];

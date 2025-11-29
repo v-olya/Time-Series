@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import type { ProcessedData, TimePoint } from '../lib/types/processed';
 import { Select } from './UI/Select';
 import { MultiSelect } from './UI/MultiSelect';
-import { aggregationOptions, intervalOptions, getPalette, plotLegend, plotMargin } from 'lib/const';
+import { aggregationOptions, intervalOptions, getPalette, plotLegend, plotMargin, plotTitle } from 'lib/const';
 import aggregateSeries, { AggregationMethod, TimeInterval } from 'lib/aggregator';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
@@ -115,7 +115,7 @@ export function DairyAcrossChannels({ data, height = 600 }: Props) {
             height,
             title: { 
               text: '<b>Dairy Products Prices Across Distribution Channels</b>', 
-              font: { family: 'Montserrat, Arial, sans-serif', size: 22 }, 
+              font: plotTitle, 
             },
             yaxis: { title: { text: 'Price per kg (CZK)' } },
             hovermode: 'x unified' as const,
