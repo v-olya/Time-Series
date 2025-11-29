@@ -2,18 +2,16 @@
 
 import React, { useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
-import type { ProcessedData, TimePoint } from '../lib/types/processed';
+import type { MilkChannelsKey, ProcessedData, TimePoint } from '../lib/types/types';
 import { Select } from './UI/Select';
-import { aggregationOptions, intervalOptions, getPalette, plotLegend, plotMargin, plotTitle } from 'lib/const';
+import { aggregationOptions, intervalOptions, getPalette, plotLegend, plotMargin, plotTitle, MILK_ONLY_KEYS } from 'lib/const';
 import aggregateSeries, { AggregationMethod, TimeInterval } from 'lib/aggregator';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
 type Props = { data: ProcessedData; height?: number };
 
-type ChannelKey = 'milk_p' | 'milk_s' | 'milk_z';
-
-const CHANNEL_LABELS: Record<ChannelKey, string> = {
+const CHANNEL_LABELS: Record<MilkChannelsKey, string> = {
   milk_p: 'Industry (P)',
   milk_s: 'Retail (S)',
   milk_z: 'Farm-gate (Z)',
@@ -25,14 +23,8 @@ function channelColorsFromCss() {
     milk_p: p.plotlyGreen,
     milk_s: p.plotlyOrange,
     milk_z: p.plotlyBlue,
-  } as Record<ChannelKey, string>;
+  } as Record<MilkChannelsKey, string>;
 }
-
-const SERIES_KEYS: Record<ChannelKey, string> = {
-  milk_p: 'P  mléko polotučné [l]_timeseries',
-  milk_s: 'S  mléko polotučné pasterované [l]_timeseries',
-  milk_z: 'Z  mléko kravské q. tř. j. [l]_timeseries',
-};
 
 export function MilkAcrossChannels({ data, height = 500 }: Props) {
   const [aggregationMethod, setAggregationMethod] = useState<AggregationMethod>('raw');
@@ -44,11 +36,11 @@ export function MilkAcrossChannels({ data, height = 500 }: Props) {
     const series = data.series;
 
     return Object.fromEntries(
-      (['milk_p', 'milk_s', 'milk_z'] as ChannelKey[]).map((ch) => [
+      (['milk_p', 'milk_s', 'milk_z'] as MilkChannelsKey[]).map((ch) => [
         ch,
-        (series[SERIES_KEYS[ch]] || []) as TimePoint[],
+        (series[MILK_ONLY_KEYS[ch]] || []) as TimePoint[],
       ]),
-    ) as Record<ChannelKey, TimePoint[]>;
+    ) as Record<MilkChannelsKey, TimePoint[]>;
   }, [data.series]);
 
   const traces = useMemo(() => {
@@ -56,7 +48,7 @@ export function MilkAcrossChannels({ data, height = 500 }: Props) {
 
     const CHANNEL_COLORS = channelColorsFromCss();
 
-    return (['milk_z', 'milk_p', 'milk_s'] as ChannelKey[]).map((ch) => {
+    return (['milk_z', 'milk_p', 'milk_s'] as MilkChannelsKey[]).map((ch) => {
       const points = aggregateSeries(seriesData[ch], timeInterval, aggregationMethod) || [];
       return {
         x: points.map((p) => p.date),

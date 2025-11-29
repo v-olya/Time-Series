@@ -1,3 +1,5 @@
+import { MilkChannelsKey } from './types/types';
+
 export const aggregationOptions = [
   { value: 'raw', label: 'Raw data' },
   { value: 'average', label: 'Average' },
@@ -53,3 +55,21 @@ export const plotMargin = { l: 90, r: 30, t: 90, b: 80 };
 export const plotTitle =  { family: 'Montserrat, Arial, sans-serif', size: 20 };
 
 export const MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+export const MILK_ONLY_KEYS: Record<MilkChannelsKey, string> = {
+  milk_p: 'P  mléko polotučné [l]_timeseries',
+  milk_s: 'S  mléko polotučné pasterované [l]_timeseries',
+  milk_z: 'Z  mléko kravské q. tř. j. [l]_timeseries',
+};
+
+export const DAIRY_RETAIL_KEYS: Record<string, string> = {
+  milk_s: 'S  mléko polotučné pasterované [l]_timeseries',
+  edam_s: 'S  eidamská cihla [kg]_timeseries',
+  butter_s: 'S  máslo [kg]_timeseries',
+};
+
+export const getChannelsKeysFor = (s: string): Record<string, string> => { return {
+  [`${s}_p`]: 'Industry (P)',
+  [`${s}_s`]: 'Retail (S)',
+  [`${s}_z`]: 'Farm-gate (Z)',
+};};

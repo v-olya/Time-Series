@@ -2,22 +2,16 @@
 
 import React, { useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
-import type { ProcessedData, TimePoint } from '../lib/types/processed';
+import type { MilkChannelsKey, ProcessedData, TimePoint } from '../lib/types/types';
 import type * as Plotly from 'plotly.js';
 import { Select } from './UI/Select';
-import { getPalette, plotTitle, plotMargin } from 'lib/const';
+import { getPalette, plotTitle, plotMargin, getChannelsKeysFor, MILK_ONLY_KEYS } from 'lib/const';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
 type Props = { data: ProcessedData; height?: number };
 
-type ChannelKey = 'milk_p' | 'milk_s' | 'milk_z';
-
-const CHANNEL_LABELS: Record<ChannelKey, string> = {
-  milk_p: 'Industry (P)',
-  milk_s: 'Retail (S)',
-  milk_z: 'Farm-gate (Z)',
-};
+const CHANNEL_LABELS: Record<MilkChannelsKey, string> = getChannelsKeysFor('milk');
 
 function channelColorsFromCss() {
   const p = getPalette();
@@ -25,22 +19,16 @@ function channelColorsFromCss() {
     milk_p: p.plotlyGreen,
     milk_s: p.plotlyOrange,
     milk_z: p.plotlyBlue,
-  } as Record<ChannelKey, string>;
+  } as Record<MilkChannelsKey, string>;
 }
-
-const SERIES_KEYS: Record<ChannelKey, string> = {
-  milk_p: 'P  mléko polotučné [l]_timeseries',
-  milk_s: 'S  mléko polotučné pasterované [l]_timeseries',
-  milk_z: 'Z  mléko kravské q. tř. j. [l]_timeseries',
-};
 
 export default function MilkFunnel({ data, height = 420 }: Props) {
   const series = data.series;
   const seriesData = useMemo(() => {
     if (!series) return null;
     return Object.fromEntries(
-      (['milk_p', 'milk_s', 'milk_z'] as ChannelKey[]).map((ch) => [ch, (series[SERIES_KEYS[ch]] || []) as TimePoint[]]),
-    ) as Record<ChannelKey, TimePoint[]>;
+      (['milk_p', 'milk_s', 'milk_z'] as MilkChannelsKey[]).map((ch) => [ch, (series[MILK_ONLY_KEYS[ch]] || []) as TimePoint[]]),
+    ) as Record<MilkChannelsKey, TimePoint[]>;
   }, [series]);
 
   const yearSet = useMemo(() => {
@@ -61,7 +49,7 @@ export default function MilkFunnel({ data, height = 420 }: Props) {
   const CHANNEL_COLORS = channelColorsFromCss();
 
   // Order: Z -> P -> S
-  const order: ChannelKey[] = ['milk_z', 'milk_p', 'milk_s'];
+  const order: MilkChannelsKey[] = ['milk_z', 'milk_p', 'milk_s'];
   function averageForYear(points: TimePoint[], year: string) {
     if (!points || !year) return 0;
     const vals = points
@@ -119,3 +107,4 @@ export default function MilkFunnel({ data, height = 420 }: Props) {
     </div>
   );
 }
+

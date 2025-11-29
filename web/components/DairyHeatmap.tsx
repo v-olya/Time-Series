@@ -2,9 +2,9 @@
 
 import React, { useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
-import type { ProcessedData, TimePoint } from '../lib/types/processed';
+import type { ProcessedData, TimePoint } from '../lib/types/types';
 import { Select } from './UI/Select';
-import { getPalette, MONTH_LABELS, plotMargin, plotTitle } from 'lib/const';
+import { DAIRY_RETAIL_KEYS, getPalette, MONTH_LABELS, plotMargin, plotTitle } from 'lib/const';
 import type * as Plotly from 'plotly.js';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
@@ -18,11 +18,6 @@ const METRIC_OPTIONS = [
   { value: 'butter_s', label: 'Butter (S)' },
 ];
 
-const SERIES_KEYS: Record<string, string> = {
-  milk_s: 'S  mléko polotučné pasterované [l]_timeseries',
-  edam_s: 'S  eidamská cihla [kg]_timeseries',
-  butter_s: 'S  máslo [kg]_timeseries',
-};
 
 function average(arr: number[]) {
   if (!arr || arr.length === 0) return NaN;
@@ -36,7 +31,7 @@ export function DairyHeatmap({ data, height = 520 }: Props) {
     if (metric === 'dairyIndex') {
       return data.timeSeries || [];
     }
-    const key = SERIES_KEYS[metric];
+    const key = DAIRY_RETAIL_KEYS[metric];
     if (!key || !data.series) return [];
     return (data.series[key] || []) as TimePoint[];
   }, [data, metric]);
