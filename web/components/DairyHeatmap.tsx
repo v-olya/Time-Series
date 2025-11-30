@@ -1,28 +1,16 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
-import type { ProcessedData, TimePoint } from '../lib/types/types';
+import type { ProcessedData, TimePoint } from '../lib/types';
 import { Select } from './UI/Select';
-import { DAIRY_RETAIL_KEYS, getPalette, MONTH_LABELS, plotMargin, plotTitle } from 'lib/const';
+import { DAIRY_RETAIL_KEYS, DAIRY_RETAIL_OPTIONS, MONTH_LABELS, plotMargin, plotTitle } from 'lib/const';
+import { average } from 'lib/plotlyUtils';
 import type * as Plotly from 'plotly.js';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
 type Props = { data: ProcessedData; height?: number };
-
-const METRIC_OPTIONS = [
-  { value: 'dairyIndex', label: 'Dairy Index' },
-  { value: 'milk_s', label: 'Milk (S)' },
-  { value: 'edam_s', label: 'Edam (S)' },
-  { value: 'butter_s', label: 'Butter (S)' },
-];
-
-
-function average(arr: number[]) {
-  if (!arr || arr.length === 0) return NaN;
-  return arr.reduce((a, b) => a + b, 0) / arr.length;
-}
 
 export function DairyHeatmap({ data, height = 520 }: Props) {
   const [metric, setMetric] = useState<string>('dairyIndex');
@@ -35,6 +23,7 @@ export function DairyHeatmap({ data, height = 520 }: Props) {
     if (!key || !data.series) return [];
     return (data.series[key] || []) as TimePoint[];
   }, [data, metric]);
+  const hasData = seriesPoints.length > 0;
 
   const { years, z } = useMemo(() => {
     const map = new Map<number, Map<number, number[]>>();
@@ -68,27 +57,54 @@ export function DairyHeatmap({ data, height = 520 }: Props) {
     return { years: yearsArr, z: zMatrix };
   }, [seriesPoints]);
 
-  if (!seriesPoints || seriesPoints.length === 0) {
-    return <div>No data available for selected metric</div>;
-  }
+  const flatValues = useMemo(() => z.flat().filter((v): v is number => v !== null), [z]);
+  const { zmin, zmax } = useMemo(() => {
+    if (flatValues.length === 0) {
+      return { zmin: 0, zmax: 0 };
+    }
+    return { zmin: Math.min(...flatValues), zmax: Math.max(...flatValues) };
+  }, [flatValues]);
 
-  const flatValues = z.flat().filter((v) => v !== null) as number[];
-  const zmin = Math.min(...flatValues);
-  const zmax = Math.max(...flatValues);
+  const basePlotData = useMemo(
+    () => ({
+      x: [...Array(12).keys()],
+      y: years,
+      colorscale: 'RdBu' as const,
+      zmin,
+      zmax,
+      colorbar: {
+        title: { text: 'Price' },
+        x: 0.97,
+        xanchor: 'left' as const,
+      },
+      hovertemplate: '%{y} %{x}: %{z}<extra></extra>',
+    }),
+    [years, zmin, zmax],
+  );
 
-  const basePlotData = {
-    x: [...Array(12).keys()],
-    y: years,
-    colorscale: 'RdBu',
-    zmin,
-    zmax,
-    colorbar: {
-      title: { text: 'Price' },
-      x: 0.97, // Move colorbar closer to the right plot
-      xanchor: 'left',
-    },
-    hovertemplate: '%{y} %{x}: %{z}<extra></extra>',
-  };
+  const plotData = useMemo(() => {
+    const heatmap = { z, type: 'heatmap', ...basePlotData } as Plotly.Data;
+    const zForSurface = z.map((row) => row.map((v) => (v === null ? NaN : v)));
+    const surface = { z: zForSurface, type: 'surface', ...basePlotData } as Plotly.Data;
+    return [heatmap, surface];
+  }, [basePlotData, z]);
+
+  const plotLayout = useMemo<Partial<Plotly.Layout>>(
+    () => ({
+      height,
+      title: { text: '<b>Seasonal heat maps of retail prices and the aggregate index</b>', font: plotTitle },
+      xaxis: { domain: [0, 0.43], scaleanchor: 'y', tickmode: 'array', tickvals: [...Array(12).keys()], ticktext: MONTH_LABELS },
+      yaxis: { domain: [0, 0.96], tickmode: 'array', tickvals: years, ticktext: years.map(String) },
+      scene: {
+        domain: { x: [0.44, 1], y: [0, 1] },
+        camera: { eye: { x: -1, y: -1.0, z: 1 } },
+        xaxis: { title: { text: '' }, tickmode: 'array', tickvals: [...Array(12).keys()], ticktext: MONTH_LABELS },
+        yaxis: { title: { text: '' }, tickmode: 'array', tickvals: [...Array(years.length).keys()], ticktext: years.map(() => '') },
+      },
+      margin: plotMargin,
+    }),
+    [height, years],
+  );
 
   return (
     <div className="group">
@@ -99,42 +115,18 @@ export function DairyHeatmap({ data, height = 520 }: Props) {
             label="Metric:"
             value={metric}
             onChange={(v) => setMetric(v)}
-            options={METRIC_OPTIONS}
+            options={DAIRY_RETAIL_OPTIONS}
           />
         </div>
 
-        <Plot
-          data={((): Plotly.Data[] => {
-            // Heatmap trace (left)
-            const heatmap = { z, type: 'heatmap', ...basePlotData } as Plotly.Data;
-
-            // Surface trace (right) — convert nulls to NaN for surface
-            const zForSurface = z.map((row) => row.map((v) => (v === null ? NaN : v)));
-            const surface = { z: zForSurface, type: 'surface', ...basePlotData } as Plotly.Data;
-
-            return [heatmap, surface];
-          })()}
-          layout={((): Partial<Plotly.Layout> => ({
-            height,
-            title: { text: '<b>Seasonal heat maps of retail prices and the aggregate index</b>', font: plotTitle },
-            // Left heatmap domain and right surface (3D) domain
-            xaxis: { domain: [0, 0.43], scaleanchor: 'y', tickmode: 'array', tickvals: [...Array(12).keys()], ticktext: MONTH_LABELS },
-            yaxis: { domain: [0, 0.96], tickmode: 'array', tickvals: years, ticktext: years.map(String) },
-            // Scene for the 3D surface, positioned on the right
-            scene: {
-              domain: { x: [0.44, 1], y: [0, 1] },
-              camera: { eye: { x: -1, y: -1.0, z: 1 } },
-              xaxis: { title: {text: ''}, tickmode: 'array', tickvals: [...Array(12).keys()], ticktext: MONTH_LABELS },
-              yaxis: { title: {text: ''}, tickmode: 'array', tickvals: [...Array(years.length).keys()], ticktext: years.map((y) => '') },
-
-            },
-            margin: plotMargin,
-          }))()}
-          config={{ responsive: true }}
-        />
+        {hasData ? (
+          <Plot data={plotData} layout={plotLayout} config={{ responsive: true }} />
+        ) : (
+          <div className="empty-state" style={{ padding: '2rem', textAlign: 'center' }}>
+            No data available for selected metric
+          </div>
+        )}
       </div>
     </div>
   );
 }
-
-export default DairyHeatmap;

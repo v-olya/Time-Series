@@ -35,19 +35,19 @@ export function DairyAcrossChannels({ data, height = 600 }: Props) {
   const [aggregationMethod, setAggregationMethod] = useState<AggregationMethod>('raw');
   const [timeInterval, setTimeInterval] = useState<TimeInterval>('month');
   const [selectedProducts, setSelectedProducts] = useState<ProductKey[]>(['butter_p', 'butter_s']);
+  // Get palette on the client: shouldn't move to module-level because of DOM access
+  const DAIRY_PRODUCT_COLORS = useMemo(() => getDairyProductColors(), []);
 
   const seriesData = useMemo(() => extractSeriesByMapping(data.series, PRODUCT_SERIES_MAPPING), [data.series]);
 
   const traces = useMemo(() => {
     if (!seriesData) return [];
 
-    const PRODUCT_COLORS = getDairyProductColors();
-
     return selectedProducts.map((productKey) => {
       const points = aggregateSeries(seriesData[productKey], timeInterval, aggregationMethod) || [];
-      return buildSeriesLineTrace(points, PRODUCT_LABELS[productKey], PRODUCT_COLORS[productKey], 6, 2);
+      return buildSeriesLineTrace(points, PRODUCT_LABELS[productKey], DAIRY_PRODUCT_COLORS[productKey], 6, 2);
     });
-  }, [seriesData, selectedProducts, aggregationMethod, timeInterval]);
+  }, [seriesData, selectedProducts, aggregationMethod, timeInterval, DAIRY_PRODUCT_COLORS]);
 
   if (!seriesData) {
     return <div>No data available</div>;

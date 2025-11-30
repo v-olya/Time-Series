@@ -19,23 +19,22 @@ const CHANNEL_LABELS: Record<MilkChannelsKey, string> = {
   milk_z: 'Farm-gate (Z)',
 };
 
-
 export function MilkAcrossChannels({ data, height = 500 }: Props) {
   const [aggregationMethod, setAggregationMethod] = useState<AggregationMethod>('raw');
   const [timeInterval, setTimeInterval] = useState<TimeInterval>('month');
 
+  // Read on the client because of DOM access
+  const MILK_CHANNEL_COLORS = useMemo(() => getMilkChannelColors(), []);
   const seriesData = useMemo(() => extractSeriesByMapping(data.series, MILK_ONLY_KEYS), [data.series]);
 
   const traces = useMemo(() => {
     if (!seriesData) return [];
 
-    const CHANNEL_COLORS = getMilkChannelColors();
-
     return (['milk_z', 'milk_p', 'milk_s'] as MilkChannelsKey[]).map((ch) => {
       const points = aggregateSeries(seriesData[ch], timeInterval, aggregationMethod) || [];
-      return buildSeriesLineTrace(points, CHANNEL_LABELS[ch], CHANNEL_COLORS[ch], 5, 2);
+      return buildSeriesLineTrace(points, CHANNEL_LABELS[ch], MILK_CHANNEL_COLORS[ch], 5, 2);
     });
-  }, [seriesData, aggregationMethod, timeInterval]);
+  }, [seriesData, timeInterval, aggregationMethod, MILK_CHANNEL_COLORS]);
 
   if (!seriesData) return <div>No milk data available</div>;
   
