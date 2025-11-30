@@ -2,9 +2,9 @@ import fs from 'fs';
 import path from 'path';
 import type { ProcessedData } from '../../lib/types';
 import { DairyAcrossChannels } from 'components/DairyAcrossChannels';
-import { MilkAcrossChannels } from 'components/MilkAcrossChannels';
+import { MilkOnlyAcrossChannels } from 'components/MilkOnlyAcrossChannels';
 import { DairyHeatmap}  from 'components/DairyHeatmap';
-import { MilkFunnel} from 'components/MilkFunnel';
+import { MilkOnlyFunnel} from 'components/MilkOnlyFunnel';
 import { DairyWaterfall } from 'components/DairyWaterfall';
 import { DairyScatter } from 'components/DairyScatter';
 import { DairyRadar } from 'components/DairyRadar';
@@ -15,7 +15,7 @@ export default function DairyPage() {
   const data = JSON.parse(raw) as ProcessedData;
 
   return <>
-    <MilkAcrossChannels data={data} height={600} />
+    <MilkOnlyAcrossChannels data={data} height={600} />
     <div className="plot-container two-plots">
       <div className="inner-large">
         <DairyScatter data={data} height={480} />
@@ -31,7 +31,7 @@ export default function DairyPage() {
         <DairyWaterfall data={data} height={480} />
       </div>
       <div className="inner-small">
-        <MilkFunnel data={data} height={480} />
+        <MilkOnlyFunnel data={data} height={480} />
       </div>
     </div>
   </>;

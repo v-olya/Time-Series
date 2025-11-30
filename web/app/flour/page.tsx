@@ -33,7 +33,7 @@ export default function FlourPage() {
           <FlourWaterfall data={data} height={480} />
         </div>
         <div className="inner-small">
-            <FlourFunnel data={data} height={480} />
+          <FlourFunnel data={data} height={480} />
         </div>
       </div>
     </>
