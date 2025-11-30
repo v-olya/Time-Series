@@ -15,7 +15,8 @@ export default function AppNav() {
     <header className="app-nav">
       <div className="vstack">
         <Link href="/">
-          <span className="badge badge-primary">Home</span>
+          <span className={'badge badge-' + (pathname === '/' ? 'primary' : 'secondary')}>
+            Home</span>
         </Link>
 
         <Link href="https://github.com/v-olya/Time-Series" target="_blank" rel="noopener noreferrer">

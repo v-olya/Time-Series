@@ -30,18 +30,22 @@ body {
   background: var(--bg);
   color: var(--page-text);
 }
+
+.container {
+  padding: 2em;
+}
+
+.heading {
+  margin: 2em 0 3em 0;
+}
+
 h1,
 h2,
 h3,
 h4 {
-  margin: 0 0 8px 0;
+  margin: .5rem;
 }
-.container {
-  padding: 2em;
-}
-.heading {
-  margin: 2em 0 3em 0;
-}
+
 .cards {
   display: flex;
   gap: 2em;
@@ -49,6 +53,7 @@ h4 {
   justify-content: center;
   margin: 3em 0;
 }
+
 .txt-c {
   text-align: center;
 }
@@ -58,6 +63,7 @@ h4 {
   text-decoration: none;
   font-weight: 600;
 }
+
 .blue-link:hover,
 .blue-link:focus {
   text-decoration: underline;
@@ -91,6 +97,9 @@ h4 {
 
 .heading .badge-primary {
   margin: 1.2rem;
+  display: inline-block;
+  padding: .1rem .7rem .3rem .7rem;
+  border-radius: 5px;
 }
 
 /* Groups and responsive teaser grid */
