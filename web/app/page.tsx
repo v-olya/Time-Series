@@ -59,7 +59,7 @@ export default function HomePage() {
   return (
     <div className="container">
       <div className="heading txt-c">
-        <h1>Real-life time series analysis and forecasting</h1>
+        <h1>Real-life time series analysis</h1>
         <h2 className="badge-primary">Product prices in &nbsp;2013 &ndash; 2025</h2>
         <h3>Data source:{' '}
           <a 
