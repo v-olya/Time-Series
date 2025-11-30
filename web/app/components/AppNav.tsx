@@ -13,11 +13,17 @@ export default function AppNav() {
 
   return (
     <header className="app-nav">
-      <Link href="/">
-        <span className="badge-primary">Home</span>
-      </Link>
+      <div className="vstack">
+        <Link href="/">
+          <span className="badge badge-primary">Home</span>
+        </Link>
 
-      <nav aria-label="Sections">
+        <Link href="https://github.com/v-olya/Time-Series" target="_blank" rel="noopener noreferrer">
+          <span className="badge badge-secondary">Repo&thinsp;</span>
+        </Link>
+      </div>
+
+      <nav className="vstack" aria-label="Sections">
         {menu.map((m) => {
           const isActive = pathname.startsWith(m.href);
           return (

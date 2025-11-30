@@ -2,7 +2,7 @@ import '../global.css';
 import AppNav from './components/AppNav';
 
 export const metadata = {
-  title: 'Stats on raw materials for bakery products',
+  title: 'Stats for bakery ingredients',
   description: 'Time series evaluation for dairy, eggs, and flour',
 };
 

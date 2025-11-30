@@ -63,14 +63,30 @@ h4 {
   text-decoration: underline;
 }
 
-.badge-primary {
+.badge {
   display: inline-block;
-  background: var(--plotly-blue);
-  color: var(--on-primary);
   border-radius: 6px;
   padding: 0.3rem 0.8rem 0.4rem 0.8rem;
   font-weight: 600;
   line-height: 1;
+}
+
+.badge-primary {
+  background: var(--plotly-blue);
+  color: var(--on-primary);
+}
+
+.badge-secondary {
+  background: var(--white);
+  color: var(--plotly-blue);
+  border: 2px solid var(--plotly-blue);
+}
+
+/* Small utility to vertically stack items without repeating layout */
+.vstack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
 }
 
 .heading .badge-primary {
@@ -113,6 +129,7 @@ h4 {
   margin: 0 auto;
   padding: 1rem;
   max-width: 1400px;
+  position: relative;
 }
 
 .plot-container.two-plots {
@@ -126,16 +143,25 @@ h4 {
   flex: 1.8;
   min-width: 800px;
 }
+
 .inner-small {
   flex: 1;
   min-width: 380px;
 }
+
 .plot-controls {
+  position: relative;
   display: flex;
   justify-content: space-around;
   gap: 1rem;
   flex-wrap: wrap;
   margin-top: 1rem;
+}
+
+.plot-controls,
+.overlay,
+.ms-dropdown {
+  z-index: 999;
 }
 
 .control-group {
@@ -214,7 +240,6 @@ select {
 
 .ms-dropdown {
   position: absolute;
-  z-index: 1000;
   left: 0;
   right: 0;
   margin-top: 6px;
@@ -227,22 +252,26 @@ select {
   list-style: none;
   padding: 0.25rem 0;
 }
+
 .ms-option {
   padding: 0.5rem 0.75rem;
   cursor: pointer;
 }
+
 .ms-option:hover {
   background: #f8fafc;
 }
+
 .ms-option.selected {
   font-weight: 600;
 }
+
 .ms-check {
   float: right;
   color: var(--plotly-blue);
 }
 
-/* Global card used to surround plots (same look as Teaser component) */
+/* Global card used to surround plots */
 .card {
   border: 1px solid var(--border);
   padding: 0.9rem;
@@ -273,12 +302,13 @@ select {
   width: calc(100% - 3rem);
   display: flex;
   justify-content: space-between;
-  z-index: 100;
+  z-index: 99;
 }
 
-.app-nav a {
+.app-nav div a {
   text-decoration: none;
   color: inherit;
+  margin-bottom: .6rem;
 }
 
 .app-nav nav {
@@ -320,10 +350,6 @@ select {
 
 .pos-absolute {
   position: absolute;
-}
-
-.overlay {
-  z-index: 10;
 }
 
 /* Fallback for plots */
