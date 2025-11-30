@@ -287,6 +287,33 @@ select {
   gap: 0.35rem;
 }
 
+/* Nav icons (vertical stack) */
+.app-nav a.nav-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 4px;
+  border-radius: 8px;
+}
+
+.app-nav a.nav-icon img {
+  display: block;
+  width: 30px;
+  height: 30px;
+  transition: filter 140ms ease, opacity 140ms ease;
+}
+
+/* Active/current page: primary background */
+.app-nav a.nav-icon.active {
+  background: var(--plotly-blue);
+}
+
+.app-nav a.nav-icon.active img {
+  filter: brightness(0) invert(1);
+}
+
 .pos-relative {
   position: relative;
 }

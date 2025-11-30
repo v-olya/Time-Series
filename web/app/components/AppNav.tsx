@@ -18,13 +18,20 @@ export default function AppNav() {
       </Link>
 
       <nav aria-label="Sections">
-        {menu.map((m) =>
-          pathname.startsWith(m.href) ? null : (
-            <Link key={m.href} href={m.href} title={m.label}>
+        {menu.map((m) => {
+          const isActive = pathname.startsWith(m.href);
+          return (
+            <Link
+              key={m.href}
+              href={m.href}
+              title={m.label}
+              className={'nav-icon' + (isActive ? ' active' : '')}
+              aria-current={isActive ? 'page' : undefined}
+            >
               <img src={m.icon} alt={m.label} width={30} height={30} />
             </Link>
-          ),
-        )}
+          );
+        })}
       </nav>
     </header>
   );
