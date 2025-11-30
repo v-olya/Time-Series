@@ -1,4 +1,5 @@
-import '../styles/global.css';
+import '../global.css';
+import Link from 'next/link';
 
 export const metadata = {
   title: 'Stats on raw materials for bakery products',
@@ -9,7 +10,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head />
-      <body>{children}</body>
+      <body>
+        <header className="app-home">
+          <Link href="/">
+            <span className="badge-primary">Home</span>
+          </Link>
+        </header>
+        {children}
+      </body>
     </html>
   );
 }
