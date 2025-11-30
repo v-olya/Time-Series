@@ -14,3 +14,5 @@ export type ProcessedData = {
   rolling?: Record<string, TimePoint[]>;
 };
 export type MilkChannelsKey = 'milk_p' | 'milk_s' | 'milk_z';
+
+export type AllDairyKeys = 'milk_p' | 'milk_s' | 'milk_z' | 'butter_p' | 'butter_s' | 'edam_p' | 'edam_s';
