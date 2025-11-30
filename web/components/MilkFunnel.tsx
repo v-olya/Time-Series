@@ -3,7 +3,7 @@
 import type { ProcessedData } from '../lib/types';
 import { getChannelLabelFor, MILK_ONLY_KEYS } from '../lib/const';
 import { getMilkChannelColors } from '../lib/plotlyUtils';
-import Funnel from './Funnel';
+import Funnel from './FunnelDefault';
 
 type Props = { data: ProcessedData; height?: number };
 
