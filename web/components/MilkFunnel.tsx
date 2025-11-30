@@ -63,8 +63,8 @@ export function MilkFunnel({ data, height = 420 }: Props) {
         />
       </div>
       {showEmptyState || !trace ? (
-        <div style={{ padding: '2rem', textAlign: 'center' }}>No milk data available</div>
-      ) : (
+            <div className="empty-state">No milk data available</div>
+          ) : (
         <Plot
           data={[trace]}
           layout={{

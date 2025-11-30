@@ -325,3 +325,16 @@ select {
 .overlay {
   z-index: 10;
 }
+
+/* Fallback for plots */
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: var(--muted);
+}
+
+/* Specify position for scatter controls */
+.right-corner {
+  top: 2rem;
+  right: 25%;
+}

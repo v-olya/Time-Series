@@ -85,10 +85,7 @@ export function DairyScatter({ data, height }: Props) {
 
   return (
     <div className="card pos-relative">
-      <span 
-        className="pos-absolute overlay" 
-        style={{top: '2rem', right: '25%'}}
-      >
+      <span className="pos-absolute overlay right-corner">
         <Select
           id="product"
           label="Product:"

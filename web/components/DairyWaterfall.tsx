@@ -126,9 +126,7 @@ export function DairyWaterfall({ data, height = 420 }: Props) {
         />
       </div>
       {notEnoughYears ? (
-        <div style={{ padding: '2rem', textAlign: 'center' }}>
-          Not enough years of data to compute yearly changes
-        </div>
+        <div className="empty-state">Not enough years of data to compute yearly changes</div>
       ) : (
         <Plot
           data={[trace]}

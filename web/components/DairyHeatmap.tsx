@@ -122,9 +122,7 @@ export function DairyHeatmap({ data, height = 520 }: Props) {
         {hasData ? (
           <Plot data={plotData} layout={plotLayout} config={{ responsive: true }} />
         ) : (
-          <div className="empty-state" style={{ padding: '2rem', textAlign: 'center' }}>
-            No data available for selected metric
-          </div>
+          <div className="empty-state">No data available for selected metric</div>
         )}
       </div>
     </div>
