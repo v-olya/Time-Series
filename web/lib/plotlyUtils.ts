@@ -1,6 +1,6 @@
 import type { TimePoint, MilkChannelsKey } from './types';
 import { getPalette, averageYear } from './helpers';
-import type { FlourProductKey } from './const';
+import type { FlourProductKey, EggProductKey } from './const';
 import type * as Plotly from 'plotly.js';
 import type { ScatterData } from 'plotly.js';
 import { PlotParams } from 'react-plotly.js';
@@ -105,45 +105,6 @@ export function averageForYear(points: TimePoint[] | undefined, year: string) {
     .map((p) => p.value) as number[];
   if (vals.length === 0) return NaN;
   return vals.reduce((s, v) => s + v, 0) / vals.length;
-}
-
-export function getDairyProductColors() {
-  const p = getPalette();
-  return {
-    butter_p: p.plotlyGreen,
-    butter_s: p.plotlyRed,
-    edam_p: p.plotlyBrown,
-    edam_s: p.plotlyBlue,
-  } as const;
-}
-
-export function getWaterfallColors() {
-  const p = getPalette();
-  return {
-    increased: p.plotlyRed,
-    decreased: p.plotlyGreen,
-    neutral: '#999',
-  } as const;
-}
-
-export type MilkColorVariant = 'default' | 'funnel';
-export function getMilkChannelColors(variant: MilkColorVariant = 'default') {
-  const p = getPalette();
-  return {
-    milk_p: p.plotlyGreen,
-    milk_s: variant === 'funnel' ? p.plotlyYellow : p.plotlyOrange,
-    milk_z: p.plotlyBlue,
-  } as Record<MilkChannelsKey, string>;
-}
-
-export function getFlourProductColors(): Record<FlourProductKey, string> {
-  const p = getPalette();
-  return {
-    flour_bread_p: p.plotlyBlue,
-    flour_00_p: p.plotlyGreen,
-    flour_s: p.plotlyOrange,
-    wheat_z: p.plotlyYellow,
-  } as Record<FlourProductKey, string>;
 }
 
 // Radar (scatterpolar) traces for a set of products

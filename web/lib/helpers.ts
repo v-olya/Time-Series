@@ -160,6 +160,12 @@ export function alignSeriesByDate(a: TimePoint[] | undefined, b: TimePoint[] | u
   });
   return { xs, ys, labels };
 }
+export function mapColorsToPalette(colorKeys: Record<string, string>, palette: Palette): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(colorKeys).map(([k, pk]) => [k, palette[pk as keyof Palette] || pk]),
+  );
+}
+
 export function bucketBySeason(
   xs: number[],
   ys: number[],

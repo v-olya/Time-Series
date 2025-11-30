@@ -97,10 +97,17 @@ export const DAIRY_RADAR_KEYS: AllDairyKeys[] = ['butter_s', 'edam_s', 'butter_p
 export const DAIRY_RADAR_COLOR_KEYS = ['plotlyRed', 'plotlyBlue', 'plotlyGreen', 'plotlyYellow'] as const;
 
 export const FLOUR_PRODUCT_LABELS: Record<FlourProductKey, string> = {
-  flour_bread_p: 'Bread flour (P)',
-  flour_00_p: 'Smooth flour (P)',
-  flour_s: 'Smooth flour (S)',
-  wheat_z: 'Wheat (Z)',
+  flour_bread_p: 'Bread flour',
+  flour_00_p: 'Smooth (P)',
+  flour_s: 'Smooth (S)',
+  wheat_z: 'Grain',
+};
+
+export const FLOUR_PRODUCT_CHANNELS: Record<FlourProductKey, string> = {
+  flour_bread_p: 'Industrial (P), Bread flour',
+  flour_00_p: 'Industrial (P), Smooth flour',
+  flour_s: 'Retail (S), Smooth flour',
+  wheat_z: 'Wheat grain (Z)',
 };
 
 export const FLOUR_PRODUCT_SERIES_MAPPING: Record<FlourProductKey, string> = {
@@ -112,3 +119,57 @@ export const FLOUR_PRODUCT_SERIES_MAPPING: Record<FlourProductKey, string> = {
 
 export const FLOUR_RADAR_KEYS: FlourProductKey[] = ['flour_s', 'flour_00_p', 'flour_bread_p', 'wheat_z'];
 export const FLOUR_RADAR_COLOR_KEYS = ['plotlyOrange', 'plotlyGreen', 'plotlyBlue', 'plotlyYellow'] as const;
+
+export type EggProductKey = 'eggs_s' | 'eggs_z';
+
+export const EGG_PRODUCT_LABELS: Record<EggProductKey, string> = {
+  eggs_s: 'Retail price',
+  eggs_z: 'Farm price',
+};
+
+export const EGG_PRODUCT_SERIES_MAPPING: Record<EggProductKey, string> = {
+  eggs_s: 'S  vejce slepičí čerstvá [ks]_timeseries',
+  eggs_z: 'Z  vejce slepičí konzumní tříděná [ks]_timeseries',
+};
+
+export const EGG_RADAR_KEYS: EggProductKey[] = ['eggs_s', 'eggs_z'];
+export const EGG_RADAR_COLOR_KEYS = ['plotlyOrange', 'plotlyGreen'] as const;
+
+export const DAIRY_PRODUCT_COLOR_KEYS = {
+  butter_p: 'plotlyGreen',
+  butter_s: 'plotlyRed',
+  edam_p: 'plotlyBrown',
+  edam_s: 'plotlyBlue',
+} as const;
+
+export const MILK_CHANNEL_COLOR_KEYS = {
+  milk_p: 'plotlyGreen',
+  milk_s: 'plotlyOrange',
+  milk_z: 'plotlyBlue',
+} as const;
+
+export const MILK_CHANNEL_FUNNEL_COLOR_KEYS = {
+  milk_p: 'plotlyGreen',
+  milk_s: 'plotlyYellow',
+  milk_z: 'plotlyBlue',
+} as const;
+
+export const FLOUR_PRODUCT_COLOR_KEYS = {
+  flour_bread_p: 'plotlyBlue',
+  flour_00_p: 'plotlyGreen',
+  flour_s: 'plotlyOrange',
+  wheat_z: 'plotlyYellow',
+} as const;
+
+export const EGG_PRODUCT_COLOR_KEYS = {
+  eggs_s: 'plotlyOrange',
+  eggs_z: 'plotlyGreen',
+} as const;
+
+export const WATERFALL_COLOR_KEYS = {
+  increased: 'plotlyRed',
+  decreased: 'plotlyGreen',
+  neutral: '#999',
+} as const;
+
+export const HEATMAP_TITLE = 'Seasonal Heat Map of Retail Prices and the Aggregate Index';
