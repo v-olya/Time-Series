@@ -5,7 +5,10 @@ import type * as Plotly from 'plotly.js';
 import dynamic from 'next/dynamic';
 import type { ProcessedData, TimePoint, AllDairyKeys } from '../lib/types';
 import { MONTH_LABELS, plotMargin, plotTitle, productKeyToSeriesKey, ALL_DAIRY_LABELS, movePlotDown } from 'lib/const';
-import { averageYear, getPalette } from 'lib/helpers';
+import { getPalette } from 'lib/helpers';
+import type { Palette } from 'lib/types';
+import { buildCustomRadarTraces } from 'lib/plotlyUtils';
+import { DAIRY_RADAR_KEYS, DAIRY_RADAR_COLOR_KEYS } from 'lib/const';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -31,39 +34,15 @@ export function DairyRadar({ data, height }: Props) {
 
   const traces = useMemo(() => {
     const seriesMap = data.series || {};
-    const prodKeys: { key: AllDairyKeys; colorKey: keyof ReturnType<typeof getPalette> }[] = [
-      { key: 'butter_s', colorKey: 'plotlyRed' },
-      { key: 'edam_s', colorKey: 'plotlyBlue' },
-      { key: 'butter_p', colorKey: 'plotlyGreen' },
-      { key: 'edam_p', colorKey: 'plotlyYellow' },
-    ];
-
-    type RadarTrace = {
-      type: 'scatterpolar';
-      r: number[];
-      theta: string[];
-      fill: 'toself';
-      name: string;
-      marker?: { color: string };
-    };
-
-    return prodKeys.map((p) => {
-      const seriesKey = productKeyToSeriesKey(p.key);
-      const pts = seriesMap[seriesKey] as TimePoint[] | undefined;
-      const r = averageYear(pts, years).map((v) => (v === null ? 0 : (v as number)));
-      const trace: RadarTrace = {
-        type: 'scatterpolar',
-        r,
-        theta: years.map(String),
-        fill: 'toself',
-        name: ALL_DAIRY_LABELS[p.key],
-        marker: { color: PALETTE[p.colorKey] },
-      };
-      return trace;
-    }) as RadarTrace[];
+    const items = DAIRY_RADAR_KEYS.map((k, i) => ({
+      seriesKey: productKeyToSeriesKey(k),
+      label: ALL_DAIRY_LABELS[k],
+      color: PALETTE[DAIRY_RADAR_COLOR_KEYS[i] as keyof Palette],
+    }));
+    return buildCustomRadarTraces(seriesMap, items, years, PALETTE);
   }, [data.series, years, PALETTE]);
 
-  const flat = traces.flatMap((t) => t.r || []);
+  const flat = traces.flatMap((t) => (t.r as number[]) || []);
   const rMin = flat.length ? Math.min(...flat) : 0;
   const rMax = flat.length ? Math.max(...flat) : 1;
 

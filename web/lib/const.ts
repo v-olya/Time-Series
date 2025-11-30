@@ -91,8 +91,10 @@ export const ALL_DAIRY_LABELS: Record<AllDairyKeys, string> = {
   edam_s: 'Edam (S)',
 };
 
-// Flour product mappings and labels (used by flour-specific components)
 export type FlourProductKey = 'flour_bread_p' | 'flour_00_p' | 'flour_s' | 'wheat_z';
+
+export const DAIRY_RADAR_KEYS: AllDairyKeys[] = ['butter_s', 'edam_s', 'butter_p', 'edam_p'];
+export const DAIRY_RADAR_COLOR_KEYS = ['plotlyRed', 'plotlyBlue', 'plotlyGreen', 'plotlyYellow'] as const;
 
 export const FLOUR_PRODUCT_LABELS: Record<FlourProductKey, string> = {
   flour_bread_p: 'Bread flour (P)',
@@ -107,3 +109,6 @@ export const FLOUR_PRODUCT_SERIES_MAPPING: Record<FlourProductKey, string> = {
   flour_bread_p: 'P  pšeničná mouka chlebová [kg]_timeseries',
   wheat_z: 'Z  pšenice potravinářská [kg]_timeseries',
 };
+
+export const FLOUR_RADAR_KEYS: FlourProductKey[] = ['flour_s', 'flour_00_p', 'flour_bread_p', 'wheat_z'];
+export const FLOUR_RADAR_COLOR_KEYS = ['plotlyOrange', 'plotlyGreen', 'plotlyBlue', 'plotlyYellow'] as const;

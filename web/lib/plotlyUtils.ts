@@ -1,5 +1,6 @@
 import type { TimePoint, MilkChannelsKey } from './types';
-import { getPalette } from './helpers';
+import { getPalette, averageYear } from './helpers';
+import type { FlourProductKey } from './const';
 import type * as Plotly from 'plotly.js';
 import type { ScatterData } from 'plotly.js';
 import { PlotParams } from 'react-plotly.js';
@@ -127,6 +128,67 @@ export function getMilkChannelColors(variant: MilkColorVariant = 'default') {
     milk_s: variant === 'funnel' ? p.plotlyYellow : p.plotlyOrange,
     milk_z: p.plotlyBlue,
   } as Record<MilkChannelsKey, string>;
+}
+
+export function getFlourProductColors(): Record<FlourProductKey, string> {
+  const p = getPalette();
+  return {
+    flour_bread_p: p.plotlyBlue,
+    flour_00_p: p.plotlyGreen,
+    flour_s: p.plotlyOrange,
+    wheat_z: p.plotlyYellow,
+  } as Record<FlourProductKey, string>;
+}
+
+// Radar (scatterpolar) traces for a set of products
+export function buildRadarTraces(
+  seriesMap: Record<string, TimePoint[] | undefined>,
+  productSeriesMapping: Record<FlourProductKey, string>,
+  productLabels: Record<FlourProductKey, string>,
+  years: number[],
+  palette?: Record<string, string>,
+): Plotly.ScatterData[] {
+  const pal = palette || getPalette();
+  const prodKeys = Object.keys(productSeriesMapping) as FlourProductKey[];
+  const paletteVals = Object.values(pal);
+  return prodKeys.map((k, idx) => {
+    const seriesKey = productSeriesMapping[k];
+    const pts = seriesMap[seriesKey] as TimePoint[] | undefined;
+    const r = averageYear(pts, years).map((v) => (v === null ? 0 : (v as number)));
+    const color = paletteVals[idx % paletteVals.length] || pal.plotlyBrown;
+    return {
+      type: 'scatterpolar',
+      r,
+      theta: years.map(String),
+      fill: 'toself',
+      name: productLabels[k] || String(k),
+      marker: { color },
+    } as Plotly.ScatterData;
+  });
+}
+
+// Generic builder for radar traces when callers provide explicit items with label and color
+export type RadarItem = { seriesKey: string; label: string; color?: string };
+export function buildCustomRadarTraces(
+  seriesMap: Record<string, TimePoint[] | undefined>,
+  items: RadarItem[],
+  years: number[],
+  palette?: Record<string, string>,
+): Plotly.ScatterData[] {
+  const pal = palette || getPalette();
+  return items.map((it, idx) => {
+    const pts = seriesMap[it.seriesKey] as TimePoint[] | undefined;
+    const r = averageYear(pts, years).map((v) => (v === null ? 0 : (v as number)));
+    const color = it.color || Object.values(pal)[idx % Object.values(pal).length] || pal.plotlyBrown;
+    return {
+      type: 'scatterpolar',
+      r,
+      theta: years.map(String),
+      fill: 'toself',
+      name: it.label,
+      marker: { color },
+    } as Plotly.ScatterData;
+  });
 }
 
 // Build a funnel trace

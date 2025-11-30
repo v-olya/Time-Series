@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import type { ProcessedData, TimePoint } from '../lib/types';
 import { Select } from './UI/Select';
 import { DAIRY_RETAIL_KEYS, DAIRY_RETAIL_OPTIONS, MONTH_LABELS, plotMargin, plotTitle } from 'lib/const';
-import { average } from 'lib/plotlyUtils';
+import { buildSeasonalMatrix } from 'lib/helpers';
 import type * as Plotly from 'plotly.js';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
@@ -25,37 +25,7 @@ export function DairyHeatmap({ data, height = 520 }: Props) {
   }, [data, metric]);
   const hasData = seriesPoints.length > 0;
 
-  const { years, z } = useMemo(() => {
-    const map = new Map<number, Map<number, number[]>>();
-
-    (seriesPoints || []).forEach((pt) => {
-      const d = new Date(pt.date);
-      if (Number.isNaN(d.getTime())) return;
-      const y = d.getFullYear();
-      const m = d.getMonth();
-      if (!map.has(y)) map.set(y, new Map());
-      const months = map.get(y)!;
-      if (!months.has(m)) months.set(m, []);
-      months.get(m)!.push(pt.value);
-    });
-
-    const yearsArr = Array.from(map.keys()).sort((a, b) => a - b);
-
-    const zMatrix: (number | null)[][] = [];
-
-    yearsArr.forEach((y) => {
-      const months = map.get(y)!;
-      const row: (number | null)[] = [];
-      for (let m = 0; m < 12; m++) {
-        const vals = months.get(m) || [];
-        const v = vals.length ? average(vals) : NaN;
-        row.push(Number.isNaN(v) ? null : parseFloat(v.toFixed(2)));
-      }
-      zMatrix.push(row);
-    });
-
-    return { years: yearsArr, z: zMatrix };
-  }, [seriesPoints]);
+  const { years, z } = useMemo(() => buildSeasonalMatrix(seriesPoints), [seriesPoints]);
 
   const flatValues = useMemo(() => z.flat().filter((v): v is number => v !== null), [z]);
   const { zmin, zmax } = useMemo(() => {

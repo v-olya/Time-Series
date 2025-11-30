@@ -1,5 +1,6 @@
+import type { ProcessedData, TimePoint, Palette } from './types';
 
-export function getPalette() {
+export function getPalette(): Palette {
   // Guard for SSR: `document` and `getComputedStyle` are only available in the browser.
   if (typeof window === 'undefined' || typeof document === 'undefined' || typeof getComputedStyle === 'undefined') {
     return {
@@ -22,7 +23,7 @@ export function getPalette() {
     plotlyPurple: read('--plotly-purple'),
     plotlyBrown: read('--plotly-brown'),
     plotlyYellow: read('--plotly-yellow'),
-  };
+  } as Palette;
 }
 
 export function pearson(xs: number[], ys: number[]) {
@@ -62,8 +63,38 @@ export function getSeasonColors(): Record<string, string> {
     Autumn: p.plotlyRed,
   } as Record<string, string>;
 }
+// Returns years array and z matrix (months x years). Used for heatmaps.
+export function buildSeasonalMatrix(seriesPoints: TimePoint[] | undefined) {
+  const map = new Map<number, Map<number, number[]>>();
+  (seriesPoints || []).forEach((pt) => {
+    const d = new Date(pt.date);
+    if (Number.isNaN(d.getTime())) return;
+    const y = d.getFullYear();
+    const m = d.getMonth();
+    if (!map.has(y)) map.set(y, new Map());
+    const months = map.get(y)!;
+    if (!months.has(m)) months.set(m, []);
+    months.get(m)!.push(pt.value as number);
+  });
 
-import type { ProcessedData, TimePoint } from './types';
+  const yearsArr = Array.from(map.keys()).sort((a, b) => a - b);
+  const zMatrix: (number | null)[][] = [];
+
+  const avg = (arr: number[]) => (arr.length === 0 ? NaN : arr.reduce((a, b) => a + b, 0) / arr.length);
+
+  yearsArr.forEach((y) => {
+    const months = map.get(y)!;
+    const row: (number | null)[] = [];
+    for (let m = 0; m < 12; m++) {
+      const vals = months.get(m) || [];
+      const v = vals.length ? avg(vals as number[]) : NaN;
+      row.push(Number.isNaN(v) ? null : parseFloat(v.toFixed(2)));
+    }
+    zMatrix.push(row);
+  });
+
+  return { years: yearsArr, z: zMatrix };
+}
 // Extracts series entries from a processed map using a mapping where keys are desired channel keys
 
 export function extractSeriesByMapping<K extends string = string>(
@@ -128,4 +159,25 @@ export function alignSeriesByDate(a: TimePoint[] | undefined, b: TimePoint[] | u
     }
   });
   return { xs, ys, labels };
+}
+export function bucketBySeason(
+  xs: number[],
+  ys: number[],
+  labels: string[],
+  seasonOrder: readonly string[] = ['Winter', 'Spring', 'Summer', 'Autumn'],
+) {
+  const buckets: Record<string, { x: number[]; y: number[]; text: string[] }> = {};
+  seasonOrder.forEach((s) => (buckets[s] = { x: [], y: [], text: [] }));
+  const n = Math.min(xs.length, ys.length, labels.length);
+  for (let i = 0; i < n; i++) {
+    const dateStr = labels[i];
+    const d = new Date(dateStr);
+    if (Number.isNaN(d.getTime())) continue;
+    const season = monthToSeason(d.getMonth());
+    if (!buckets[season]) buckets[season] = { x: [], y: [], text: [] };
+    buckets[season].x.push(xs[i]);
+    buckets[season].y.push(ys[i]);
+    buckets[season].text.push(dateStr);
+  }
+  return buckets as Record<string, { x: number[]; y: number[]; text: string[] }>;
 }

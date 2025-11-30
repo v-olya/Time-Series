@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import type { AllDairyKeys, ProcessedData, TimePoint } from '../lib/types';
 import { Select } from './UI/Select';
 import { plotTitle, plotMargin, productKeyToSeriesKey, ALL_DAIRY_LABELS, SEASONS_ORDER } from '../lib/const';
-import { monthToSeason, pearson, alignSeriesByDate, getSeasonColors } from 'lib/helpers';
+import { pearson, alignSeriesByDate, getSeasonColors, bucketBySeason } from 'lib/helpers';
 import { buildSeasonScatterTraces } from 'lib/plotlyUtils';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
@@ -37,18 +37,7 @@ export function DairyScatter({ data, height }: Props) {
     '<b>Farm-gate Milk  VS</b>                              <br><br>' +
     `R = ${corr.toFixed(2)} – ${highCorr ? '<b>' : ''}${corrDescriptor}${highCorr ? '</b>' : ''} correlation`;
 
-  const seasonPoints = useMemo(() => {
-    const buckets: Record<string, { x: number[]; y: number[]; text: string[] }> = {};
-    SEASONS_ORDER.forEach((s) => (buckets[s] = { x: [], y: [], text: [] }));
-    points.labels.forEach((dateStr, i) => {
-      const d = new Date(dateStr);
-      const season = monthToSeason(d.getMonth());
-      buckets[season].x.push(points.xs[i]);
-      buckets[season].y.push(points.ys[i]);
-      buckets[season].text.push(dateStr);
-    });
-    return buckets;
-  }, [points]);
+  const seasonPoints = useMemo(() => bucketBySeason(points.xs, points.ys, points.labels, SEASONS_ORDER), [points]);
   
 
   type SeasonTrace = {

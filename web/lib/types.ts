@@ -16,3 +16,13 @@ export type ProcessedData = {
 export type MilkChannelsKey = 'milk_p' | 'milk_s' | 'milk_z';
 
 export type AllDairyKeys = 'milk_p' | 'milk_s' | 'milk_z' | 'butter_p' | 'butter_s' | 'edam_p' | 'edam_s';
+
+export type Palette = {
+  plotlyBlue: string;
+  plotlyOrange: string;
+  plotlyGreen: string;
+  plotlyRed: string;
+  plotlyPurple: string;
+  plotlyBrown: string;
+  plotlyYellow: string;
+};
