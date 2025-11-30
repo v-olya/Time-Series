@@ -35,32 +35,6 @@ export const movePlotDown = (margins: typeof plotMargin): typeof plotMargin => {
   return { ...margins, t: (margins.t ?? 0) + 35, b: 20 };
 };
 
-// Read the CSS variables at runtime to keep the single source of truth (`global.css`)
-export function getPalette() {
-  // Guard for SSR: `document` and `getComputedStyle` are only available in the browser. 
-  if (typeof window === 'undefined' || typeof document === 'undefined' || typeof getComputedStyle === 'undefined') {
-    return {
-      plotlyBlue: '',
-      plotlyOrange: '',
-      plotlyGreen: '',
-      plotlyRed: '',
-      plotlyPurple: '',
-      plotlyBrown: '',
-      plotlyYellow: '',
-    };
-  }
-  const s = getComputedStyle(document.documentElement);
-  const read = (name: string) => s.getPropertyValue(name).trim() || '';
-  return {
-    plotlyBlue: read('--plotly-blue'),
-    plotlyOrange: read('--plotly-orange'),
-    plotlyGreen: read('--plotly-green'),
-    plotlyRed: read('--plotly-red'),
-    plotlyPurple: read('--plotly-purple'),
-    plotlyBrown: read('--plotly-brown'),
-    plotlyYellow: read('--plotly-yellow'),
-  };
-}
 
 export const MILK_ONLY_KEYS: Record<MilkChannelsKey, string> = {
   milk_p: 'P  mléko polotučné [l]_timeseries',
@@ -115,4 +89,21 @@ export const ALL_DAIRY_LABELS: Record<AllDairyKeys, string> = {
   butter_s: 'Butter (S)',
   edam_p: 'Edam (P)',
   edam_s: 'Edam (S)',
+};
+
+// Flour product mappings and labels (used by flour-specific components)
+export type FlourProductKey = 'flour_bread_p' | 'flour_00_p' | 'flour_s' | 'wheat_z';
+
+export const FLOUR_PRODUCT_LABELS: Record<FlourProductKey, string> = {
+  flour_bread_p: 'Bread flour (P)',
+  flour_00_p: 'Smooth flour (P)',
+  flour_s: 'Smooth flour (S)',
+  wheat_z: 'Wheat (Z)',
+};
+
+export const FLOUR_PRODUCT_SERIES_MAPPING: Record<FlourProductKey, string> = {
+  flour_s: 'S  pšeničná mouka hladká [kg]_timeseries',
+  flour_00_p: 'P  pšeničná mouka hladká 00 extra [kg]_timeseries',
+  flour_bread_p: 'P  pšeničná mouka chlebová [kg]_timeseries',
+  wheat_z: 'Z  pšenice potravinářská [kg]_timeseries',
 };

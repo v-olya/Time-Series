@@ -4,8 +4,8 @@ import { useMemo } from 'react';
 import type * as Plotly from 'plotly.js';
 import dynamic from 'next/dynamic';
 import type { ProcessedData, TimePoint, AllDairyKeys } from '../lib/types';
-import { getPalette, MONTH_LABELS, plotMargin, plotTitle, productKeyToSeriesKey, ALL_DAIRY_LABELS, movePlotDown } from 'lib/const';
-import { averageYear } from 'lib/helpers';
+import { MONTH_LABELS, plotMargin, plotTitle, productKeyToSeriesKey, ALL_DAIRY_LABELS, movePlotDown } from 'lib/const';
+import { averageYear, getPalette } from 'lib/helpers';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 

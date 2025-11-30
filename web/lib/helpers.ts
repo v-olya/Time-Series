@@ -1,5 +1,29 @@
-import type { ScatterData } from 'plotly.js';
-import { PlotParams } from 'react-plotly.js';
+
+export function getPalette() {
+  // Guard for SSR: `document` and `getComputedStyle` are only available in the browser.
+  if (typeof window === 'undefined' || typeof document === 'undefined' || typeof getComputedStyle === 'undefined') {
+    return {
+      plotlyBlue: '',
+      plotlyOrange: '',
+      plotlyGreen: '',
+      plotlyRed: '',
+      plotlyPurple: '',
+      plotlyBrown: '',
+      plotlyYellow: '',
+    };
+  }
+  const s = getComputedStyle(document.documentElement);
+  const read = (name: string) => s.getPropertyValue(name).trim() || '';
+  return {
+    plotlyBlue: read('--plotly-blue'),
+    plotlyOrange: read('--plotly-orange'),
+    plotlyGreen: read('--plotly-green'),
+    plotlyRed: read('--plotly-red'),
+    plotlyPurple: read('--plotly-purple'),
+    plotlyBrown: read('--plotly-brown'),
+    plotlyYellow: read('--plotly-yellow'),
+  };
+}
 
 export function pearson(xs: number[], ys: number[]) {
   if (xs.length === 0 || ys.length === 0 || xs.length !== ys.length) return 0;
@@ -27,6 +51,16 @@ export  function monthToSeason(monthIndex: number) {
   if (monthIndex >= 2 && monthIndex <= 4) return 'Spring';
   if (monthIndex >= 5 && monthIndex <= 7) return 'Summer';
   return 'Autumn';
+}
+
+export function getSeasonColors(): Record<string, string> {
+  const p = getPalette();
+  return {
+    Winter: p.plotlyBlue,
+    Spring: p.plotlyGreen,
+    Summer: p.plotlyYellow,
+    Autumn: p.plotlyRed,
+  } as Record<string, string>;
 }
 
 import type { ProcessedData, TimePoint } from './types';

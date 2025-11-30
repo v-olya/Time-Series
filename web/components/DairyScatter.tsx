@@ -4,8 +4,8 @@ import { useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import type { AllDairyKeys, ProcessedData, TimePoint } from '../lib/types';
 import { Select } from './UI/Select';
-import { getPalette, plotTitle, plotMargin, productKeyToSeriesKey, ALL_DAIRY_LABELS, SEASONS_ORDER } from '../lib/const';
-import { monthToSeason, pearson, alignSeriesByDate } from 'lib/helpers';
+import { plotTitle, plotMargin, productKeyToSeriesKey, ALL_DAIRY_LABELS, SEASONS_ORDER } from '../lib/const';
+import { monthToSeason, pearson, alignSeriesByDate, getSeasonColors } from 'lib/helpers';
 import { buildSeasonScatterTraces } from 'lib/plotlyUtils';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
@@ -19,15 +19,7 @@ const productOptions = (Object.keys(ALL_DAIRY_LABELS) as AllDairyKeys[])
 export function DairyScatter({ data, height }: Props) {
   const [product, setProduct] = useState<AllDairyKeys>('butter_s'); // default Butter (S)
 
-  const seasonColors = useMemo(() => {
-    const p = getPalette();
-    return {
-      Winter: p.plotlyBlue,
-      Spring: p.plotlyGreen,
-      Summer: p.plotlyYellow,
-      Autumn: p.plotlyRed,
-    } as Record<string, string>;
-  }, []);
+  const seasonColors = useMemo(() => getSeasonColors(), []);
 
   const points = useMemo(() => {
     const zKey = productKeyToSeriesKey('milk_z');

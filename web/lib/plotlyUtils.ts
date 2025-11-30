@@ -1,5 +1,5 @@
 import type { TimePoint, MilkChannelsKey } from './types';
-import { getPalette } from './const';
+import { getPalette } from './helpers';
 import type * as Plotly from 'plotly.js';
 import type { ScatterData } from 'plotly.js';
 import { PlotParams } from 'react-plotly.js';
