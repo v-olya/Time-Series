@@ -35,7 +35,7 @@ export function DairyScatter({ data, height }: Props) {
 
   const titleText =
     '<b>Farm-gate Milk  VS</b>                              <br><br>' +
-    `R = ${corr.toFixed(2)} \\u2014 ${highCorr ? '<b>' : ''}${corrDescriptor}${highCorr ? '</b>' : ''} correlation`;
+    `R = ${corr.toFixed(2)} – ${highCorr ? '<b>' : ''}${corrDescriptor}${highCorr ? '</b>' : ''} correlation`;
 
   const seasonPoints = useMemo(() => {
     const buckets: Record<string, { x: number[]; y: number[]; text: string[] }> = {};
