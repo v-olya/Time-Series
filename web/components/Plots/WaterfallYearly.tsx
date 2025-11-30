@@ -10,7 +10,7 @@ import { averageForYear, buildWaterfallTrace, WaterfallCustomDatum } from '../..
 import { extractSeriesByMapping, getYearSetFromSeriesData } from '../../lib/helpers';
 import type * as Plotly from 'plotly.js';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
+import PlotlyWrapper from './PlotlyWrapper';
 
 type Props = {
   data: ProcessedData;
@@ -147,7 +147,7 @@ export function WaterfallYearly({
       {notEnoughYears ? (
         <div className="empty-state">Not enough years of data to compute yearly changes</div>
       ) : (
-        <Plot
+        <PlotlyWrapper
           data={[trace]}
           layout={{
             height,

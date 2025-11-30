@@ -1,11 +1,10 @@
 'use client';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import PlotlyWrapper from '../Plots/PlotlyWrapper';
 import styles from './Teaser.module.css';
 import type { ProcessedData, TimePoint } from '../../lib/types';
 import { scatterTrace } from 'lib/plotlyUtils';
-
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
 type Props = {
   title: string;
@@ -56,7 +55,7 @@ export function Teaser({ title, href, series, windowMonths = 36, showFullAnalysi
       </div>
 
       <div className={styles.plot}>
-        <Plot
+        <PlotlyWrapper
           data={[scatterTrace(sparkX, sparkY, '', 1)]}
           layout={{
             height: 100,

@@ -8,7 +8,7 @@ import { plotTitle, plotMargin, movePlotDown } from '../../lib/const';
 import { averageForYear, buildFunnelTrace } from '../../lib/plotlyUtils';
 import { extractSeriesByMapping, getYearSetFromSeriesData } from '../../lib/helpers';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
+import PlotlyWrapper from './PlotlyWrapper';
 
 type FunnelProps = {
   data: ProcessedData;
@@ -67,7 +67,7 @@ export function Funnel({ data, mapping, channelOrder, labels, colors, titleHTML,
       {showEmptyState || !trace ? (
         <div className="empty-state">No data available</div>
       ) : (
-        <Plot
+        <PlotlyWrapper
           data={[trace]}
           layout={{
             height,

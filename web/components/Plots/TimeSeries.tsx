@@ -10,7 +10,7 @@ import { buildSeriesLineTrace } from '../../lib/plotlyUtils';
 import { extractSeriesByMapping } from '../../lib/helpers';
 import { aggregateSeries, AggregationMethod, TimeInterval } from '../../lib/aggregator';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
+import PlotlyWrapper from './PlotlyWrapper';
 
 type ProductOption = { value: string; label: string };
 
@@ -95,7 +95,7 @@ export function TimeSeries<T extends string>({
           />
         </div>
 
-        <Plot
+        <PlotlyWrapper
           data={traces}
           layout={{
             height,

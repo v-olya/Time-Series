@@ -7,7 +7,7 @@ import { movePlotDown, plotMargin, plotTitle } from '../../lib/const';
 import { getPalette } from '../../lib/helpers';
 import { buildCustomRadarTraces } from '../../lib/plotlyUtils';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
+import PlotlyWrapper from './PlotlyWrapper';
 
 export type RadarItem = { seriesKey: string; label: string; color: string };
 
@@ -45,7 +45,7 @@ export function RadarYearly({ data, items, title, height = 520 }: Props) {
 
   return (
     <div className="card">
-      <Plot
+      <PlotlyWrapper
         data={traces}
         layout={{
           height,

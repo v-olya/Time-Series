@@ -8,7 +8,7 @@ import { plotMargin, plotTitle, MONTH_LABELS } from '../../lib/const';
 import type * as Plotly from 'plotly.js';
 import { buildSeasonalMatrix } from '../../lib/helpers';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
+import PlotlyWrapper from './PlotlyWrapper';
 
 type Props = {
   data: ProcessedData;
@@ -82,7 +82,7 @@ export function Heatmap({ data, indexKey, seriesMapping, options, title, height 
         </div>
 
         {flatValues.length ? (
-          <Plot data={plotData} layout={plotLayout} config={{ responsive: true }} />
+          <PlotlyWrapper data={plotData} layout={plotLayout} config={{ responsive: true }} />
         ) : (
           <div className="empty-state">No data available for selected metric</div>
         )}

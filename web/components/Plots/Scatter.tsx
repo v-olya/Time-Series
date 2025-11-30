@@ -8,7 +8,7 @@ import { plotTitle, plotMargin, SEASONS_ORDER } from '../../lib/const';
 import { pearson, alignSeriesByDate, getSeasonColors, bucketBySeason } from '../../lib/helpers';
 import { buildSeasonScatterTraces } from '../../lib/plotlyUtils';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
+import PlotlyWrapper from './PlotlyWrapper';
 
 type ScatterProductOption = { value: string; label: string };
 
@@ -97,7 +97,7 @@ export function Scatter({ data, baseSeriesKey, productOptions, baseLabel, height
         </span>
       )}
 
-      <Plot
+      <PlotlyWrapper
         data={traces}
         layout={{
           height,
