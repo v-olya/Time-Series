@@ -60,17 +60,23 @@ export function buildSeasonScatterTraces(
   return traces;
 }
 
-export type WaterfallCustomDatum = { prev: number | null; sel: number | null; delta: number | null };
+export type WaterfallCustomDatum = {
+  prev: number | null;
+  sel: number | null;
+  delta: number | null;
+  label?: string;
+};
 
 // Build a waterfall trace with customdata
 export function buildWaterfallTrace(
-  labels: string[],
+  labels: Array<string | number>,
   y: number[],
   measure: string[],
   customdata: WaterfallCustomDatum[],
   colors: { increased: string; decreased: string; neutral?: string },
 ): Plotly.Data {
-  const encodedCustomdata = customdata.map((entry) => [entry.sel ?? null, entry.prev ?? null, entry.delta ?? null]) as Plotly.Datum[][];
+  const encodedCustomdata = customdata
+    .map((entry) => [entry.sel ?? null, entry.prev ?? null, entry.delta ?? null, entry.label ?? '']) as Plotly.Datum[][];
   return {
     type: 'waterfall',
     x: labels,
@@ -83,7 +89,7 @@ export function buildWaterfallTrace(
     totals: { marker: { color: colors.neutral ?? '#666' } },
     customdata: encodedCustomdata,
     hovertemplate:
-      '%{x}: %{customdata[0]:.2f} CZK (prev %{customdata[1]:.2f})<br>Δ %{customdata[2]:.2f} CZK<extra></extra>',
+      '%{customdata[3]}: %{customdata[0]:.2f} CZK (prev %{customdata[1]:.2f})<br>Δ %{customdata[2]:.2f} CZK<extra></extra>',
   } as Plotly.Data;
 }
 

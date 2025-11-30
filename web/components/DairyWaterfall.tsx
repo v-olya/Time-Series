@@ -27,12 +27,10 @@ export function DairyWaterfall({ data, height = 420 }: Props) {
 
   const [selectedProduct, setSelectedProduct] = useState<string>('dairyIndex');
 
-  const { deltas, prevTotal, selTotal, keysUsed, yearLabels } = useMemo(() => {
+  const { deltas, keysUsed, yearLabels } = useMemo(() => {
     if (!yearSet || yearSet.length < 2) {
       return {
         deltas: [] as number[],
-        prevTotal: 0,
-        selTotal: 0,
         keysUsed: PRODUCT_KEYS.slice() as (typeof PRODUCT_KEYS)[number][],
         yearLabels: [] as string[],
       };
@@ -40,8 +38,6 @@ export function DairyWaterfall({ data, height = 420 }: Props) {
 
     const keysToUse = [selectedProduct] as (typeof PRODUCT_KEYS)[number][];
     const deltasArr: number[] = [];
-    let prevSum = 0;
-    let selSum = 0;
     const labels: string[] = [];
 
     for (let i = 1; i < yearSet.length; i++) {
@@ -59,12 +55,10 @@ export function DairyWaterfall({ data, height = 420 }: Props) {
         curYearSum += Number.isNaN(sel) ? 0 : sel;
       });
 
-      prevSum += prevYearSum;
-      selSum += curYearSum;
       deltasArr.push(curYearSum - prevYearSum);
     }
 
-    return { deltas: deltasArr, prevTotal: prevSum, selTotal: selSum, keysUsed: keysToUse, yearLabels: labels };
+    return { deltas: deltasArr, keysUsed: keysToUse, yearLabels: labels };
   }, [seriesData, yearSet, selectedProduct]);
 
   const { trace, topYearAnnotations } = useMemo(() => {
@@ -72,9 +66,8 @@ export function DairyWaterfall({ data, height = 420 }: Props) {
       return { trace: buildWaterfallTrace([], [], [], [] as WaterfallCustomDatum[], productColors), topYearAnnotations: [] };
     }
 
-    const sumDeltas = deltas.reduce((s, v) => s + v, 0);
-    const yValues = [...deltas, sumDeltas];
-    const measure = [...deltas.map(() => 'relative'), 'total'];
+    const yValues = [...deltas];
+    const measure = deltas.map(() => 'relative');
 
     const customdata: WaterfallCustomDatum[] = yearLabels.map((curYear, idx) => {
       const prevYear = yearSet[idx];
@@ -91,26 +84,25 @@ export function DairyWaterfall({ data, height = 420 }: Props) {
         prev: Number.isNaN(prevYearSum) ? null : prevYearSum,
         sel: Number.isNaN(curYearSum) ? null : curYearSum,
         delta: deltas[idx],
+        label: curYear,
       };
     });
 
-    customdata.push({ prev: prevTotal, sel: selTotal, delta: sumDeltas });
-
-    const annotations: Array<Partial<Plotly.Annotations>> = yearLabels.map((x) => ({
-      x,
+    const annotations: Array<Partial<Plotly.Annotations>> = yearLabels.map((label, idx) => ({
+      x: idx,
       yref: 'paper' as const,
       y: 1.05,
-      text: String(x),
+      text: String(label),
       showarrow: false,
       xanchor: 'center' as const,
       yanchor: 'bottom' as const,
     }));
 
-    const labelsWithTotal = [...yearLabels, 'Net Δ'];
-    const traceData = buildWaterfallTrace(labelsWithTotal, yValues, measure, customdata, productColors);
+    const xValues = yearLabels.map((_, idx) => idx);
+    const traceData = buildWaterfallTrace(xValues, yValues, measure, customdata, productColors);
 
     return { trace: traceData, topYearAnnotations: annotations };
-  }, [deltas, yearLabels, yearSet, keysUsed, prevTotal, selTotal, seriesData]);
+  }, [deltas, yearLabels, yearSet, keysUsed, seriesData]);
 
   const notEnoughYears = yearSet.length < 2;
 
