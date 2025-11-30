@@ -1,5 +1,5 @@
-import Teaser from './Teaser';
-import type { ProcessedData } from '../../lib/types/types';
+import {Teaser} from './Teaser';
+import type { ProcessedData } from '../../lib/types';
 
 type TeaserItem = {
   title: string;
@@ -13,7 +13,7 @@ type Props = {
   fallback?: string;
 };
 
-export default function TeaserGroup({ heading, teasers, fallback }: Props) {
+export function TeaserGroup({ heading, teasers, fallback }: Props) {
   const hasIndex = teasers && teasers.length && teasers[0].series;
 
   return (

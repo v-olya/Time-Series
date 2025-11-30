@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
-import type { ProcessedData, TimePoint } from '../lib/types/types';
+import type { ProcessedData, TimePoint } from '../lib/types';
 import { Select } from './UI/Select';
 import { MultiSelect } from './UI/MultiSelect';
-import { aggregationOptions, intervalOptions, getPalette, plotLegend, plotMargin, plotTitle } from 'lib/const';
-import aggregateSeries, { AggregationMethod, TimeInterval } from 'lib/aggregator';
+import { aggregationOptions, intervalOptions, plotLegend, plotMargin, plotTitle } from 'lib/const';
+import { getDairyProductColors, buildSeriesLineTrace } from 'lib/plotlyUtils';
+import { extractSeriesByMapping } from 'lib/helpers';
+import { aggregateSeries, AggregationMethod, TimeInterval } from 'lib/aggregator';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -21,53 +23,29 @@ const PRODUCT_LABELS: Record<ProductKey, string> = {
   butter_s: 'Butter (S)',
 };
 
-function productColorsFromCss() {
-  const p = getPalette();
-  return {
-    butter_p: p.plotlyGreen,
-    butter_s: p.plotlyRed,
-    edam_p: p.plotlyBrown,
-    edam_s: p.plotlyBlue,
-  } as Record<ProductKey, string>;
-}
+const PRODUCT_SERIES_MAPPING: Record<ProductKey, string> = {
+  edam_p: 'P  eidamská cihla [kg]_timeseries',
+  edam_s: 'S  eidamská cihla [kg]_timeseries',
+  butter_p: 'P  máslo [kg]_timeseries',
+  butter_s: 'S  máslo [kg]_timeseries',
+};
+
 
 export function DairyAcrossChannels({ data, height = 600 }: Props) {
   const [aggregationMethod, setAggregationMethod] = useState<AggregationMethod>('raw');
   const [timeInterval, setTimeInterval] = useState<TimeInterval>('month');
   const [selectedProducts, setSelectedProducts] = useState<ProductKey[]>(['butter_p', 'butter_s']);
 
-  const seriesData = useMemo(() => {
-    if (!data.series) return null;
-    const series = data.series;
-
-    const mapping: [ProductKey, string][] = [
-      ['edam_p', 'P  eidamská cihla [kg]_timeseries'],
-      ['edam_s', 'S  eidamská cihla [kg]_timeseries'],
-      ['butter_p', 'P  máslo [kg]_timeseries'],
-      ['butter_s', 'S  máslo [kg]_timeseries'],
-    ];
-
-    return Object.fromEntries(
-      mapping.map(([key, seriesKey]) => [key, (series[seriesKey] || []) as TimePoint[]]),
-    ) as Record<ProductKey, TimePoint[]>;
-  }, [data.series]);
+  const seriesData = useMemo(() => extractSeriesByMapping(data.series, PRODUCT_SERIES_MAPPING), [data.series]);
 
   const traces = useMemo(() => {
     if (!seriesData) return [];
 
-    const PRODUCT_COLORS = productColorsFromCss();
+    const PRODUCT_COLORS = getDairyProductColors();
 
     return selectedProducts.map((productKey) => {
       const points = aggregateSeries(seriesData[productKey], timeInterval, aggregationMethod) || [];
-      return {
-        x: points.map((p) => p.date),
-        y: points.map((p) => p.value),
-        type: 'scatter' as const,
-        mode: 'lines+markers' as const,
-        name: PRODUCT_LABELS[productKey],
-        line: { color: PRODUCT_COLORS[productKey], width: 2 },
-        marker: { size: 6, color: PRODUCT_COLORS[productKey] },
-      };
+      return buildSeriesLineTrace(points, PRODUCT_LABELS[productKey], PRODUCT_COLORS[productKey], 6, 2);
     });
   }, [seriesData, selectedProducts, aggregationMethod, timeInterval]);
 

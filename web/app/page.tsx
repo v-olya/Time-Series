@@ -1,9 +1,9 @@
 import fs from 'fs';
 import path from 'path';
-import Teaser from '../components/UI/Teaser';
-import TeaserGroup from '../components/UI/TeaserGroup';
-import PriceLegend from '../components/PriceLegend';
-import type { ProcessedData, SeriesMap, TimePoint } from '../lib/types/types';
+import { Teaser } from '../components/UI/Teaser';
+import { TeaserGroup} from '../components/UI/TeaserGroup';
+import { Intro } from '../components/UI/Intro';
+import type { ProcessedData, SeriesMap, TimePoint } from '../lib/types';
 
 export default function HomePage() {
   const readJson = (name: string): ProcessedData | null => {
@@ -60,7 +60,7 @@ export default function HomePage() {
     <div className="container">
       <div className="heading txt-c">
         <h1>Real-life time series analysis and forecasting</h1>
-        <h2 className="subheading">Product prices in &nbsp;2013 &ndash; 2025</h2>
+        <h2 className="badge-primary">Product prices in &nbsp;2013 &ndash; 2025</h2>
         <h3>Data source:{' '}
           <a 
             className="blue-link" 
@@ -70,7 +70,7 @@ export default function HomePage() {
           </a>
         </h3>
       </div>
-      <PriceLegend />
+      <Intro />
       <TeaserGroup
         heading="Dairy products"
         teasers={[
