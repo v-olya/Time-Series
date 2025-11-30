@@ -1,11 +1,13 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
-import type { MilkChannelsKey, ProcessedData, TimePoint } from '../lib/types/types';
+import type { MilkChannelsKey, ProcessedData, TimePoint } from '../lib/types';
 import { Select } from './UI/Select';
-import { aggregationOptions, intervalOptions, getPalette, plotLegend, plotMargin, plotTitle, MILK_ONLY_KEYS } from 'lib/const';
-import aggregateSeries, { AggregationMethod, TimeInterval } from 'lib/aggregator';
+import { aggregationOptions, intervalOptions, plotLegend, plotMargin, plotTitle, MILK_ONLY_KEYS } from 'lib/const';
+import { getMilkChannelColors, buildSeriesLineTrace } from 'lib/plotlyUtils';
+import { extractSeriesByMapping } from 'lib/helpers';
+import { aggregateSeries, AggregationMethod, TimeInterval } from 'lib/aggregator';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -17,48 +19,21 @@ const CHANNEL_LABELS: Record<MilkChannelsKey, string> = {
   milk_z: 'Farm-gate (Z)',
 };
 
-function channelColorsFromCss() {
-  const p = getPalette();
-  return {
-    milk_p: p.plotlyGreen,
-    milk_s: p.plotlyOrange,
-    milk_z: p.plotlyBlue,
-  } as Record<MilkChannelsKey, string>;
-}
 
 export function MilkAcrossChannels({ data, height = 500 }: Props) {
   const [aggregationMethod, setAggregationMethod] = useState<AggregationMethod>('raw');
   const [timeInterval, setTimeInterval] = useState<TimeInterval>('month');
 
-  const seriesData = useMemo(() => {
-    if (!data.series) return null;
-
-    const series = data.series;
-
-    return Object.fromEntries(
-      (['milk_p', 'milk_s', 'milk_z'] as MilkChannelsKey[]).map((ch) => [
-        ch,
-        (series[MILK_ONLY_KEYS[ch]] || []) as TimePoint[],
-      ]),
-    ) as Record<MilkChannelsKey, TimePoint[]>;
-  }, [data.series]);
+  const seriesData = useMemo(() => extractSeriesByMapping(data.series, MILK_ONLY_KEYS), [data.series]);
 
   const traces = useMemo(() => {
     if (!seriesData) return [];
 
-    const CHANNEL_COLORS = channelColorsFromCss();
+    const CHANNEL_COLORS = getMilkChannelColors();
 
     return (['milk_z', 'milk_p', 'milk_s'] as MilkChannelsKey[]).map((ch) => {
       const points = aggregateSeries(seriesData[ch], timeInterval, aggregationMethod) || [];
-      return {
-        x: points.map((p) => p.date),
-        y: points.map((p) => p.value),
-        type: 'scatter' as const,
-        mode: 'lines+markers' as const,
-        name: CHANNEL_LABELS[ch],
-        line: { color: CHANNEL_COLORS[ch], width: 2 },
-        marker: { size: 5, color: CHANNEL_COLORS[ch] },
-      };
+      return buildSeriesLineTrace(points, CHANNEL_LABELS[ch], CHANNEL_COLORS[ch], 5, 2);
     });
   }, [seriesData, aggregationMethod, timeInterval]);
 
@@ -87,7 +62,7 @@ export function MilkAcrossChannels({ data, height = 500 }: Props) {
           data={traces}
           layout={{
             height,
-            title: { text: '<b>Plain Milk Prices Across Distribution Channels</b>', font: plotTitle },
+            title: { text: '<b>Milk Prices Across Distribution Channels</b>', font: plotTitle },
             yaxis: { title: { text: 'Price per kg (CZK)' } },
             hovermode: 'x unified' as const,
             showlegend: true,

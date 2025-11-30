@@ -1,10 +1,9 @@
 'use client';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import React from 'react';
 import styles from './Teaser.module.css';
-import type { ProcessedData, TimePoint } from '../../lib/types/types';
-import { scatterTrace } from '../../lib/plot';
+import type { ProcessedData, TimePoint } from '../../lib/types';
+import { scatterTrace } from 'lib/plotlyUtils';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -16,7 +15,7 @@ type Props = {
   showFullAnalysis?: boolean;
 };
 
-export default function Teaser({ title, href, series, windowMonths = 36, showFullAnalysis = false }: Props) {
+export function Teaser({ title, href, series, windowMonths = 36, showFullAnalysis = false }: Props) {
   const last = series.timeSeries[series.timeSeries.length - 1] as TimePoint | undefined;
   const sparkSlice = series.timeSeries.slice(-windowMonths) as TimePoint[];
   const sparkX = sparkSlice.map((d) => d.date);
