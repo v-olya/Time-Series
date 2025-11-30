@@ -1,4 +1,4 @@
-import { MilkChannelsKey } from './types/types';
+import { AllDairyKeys, MilkChannelsKey } from './types';
 
 export const aggregationOptions = [
   { value: 'raw', label: 'Raw data' },
@@ -16,30 +16,8 @@ export const intervalOptions = [
   { value: 'year', label: 'Year' },
 ];
 
-// Read the CSS variables at runtime to keep the single source of truth (`web/styles/global.css`)
-export function getPalette() {
-  // Guard for SSR: `document` and `getComputedStyle` are only available in the browser. 
-  if (typeof window === 'undefined' || typeof document === 'undefined' || typeof getComputedStyle === 'undefined') {
-    return {
-      plotlyBlue: '',
-      plotlyOrange: '',
-      plotlyGreen: '',
-      plotlyRed: '',
-      plotlyPurple: '',
-      plotlyBrown: '',
-    };
-  }
-  const s = getComputedStyle(document.documentElement);
-  const read = (name: string) => s.getPropertyValue(name).trim() || '';
-  return {
-    plotlyBlue: read('--plotly-blue'),
-    plotlyOrange: read('--plotly-orange'),
-    plotlyGreen: read('--plotly-green'),
-    plotlyRed: read('--plotly-red'),
-    plotlyPurple: read('--plotly-purple'),
-    plotlyBrown: read('--plotly-brown'),
-  };
-}
+export const MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+export const SEASONS_ORDER = ['Winter', 'Spring', 'Summer', 'Autumn'] as const;
 
 export const plotLegend = {
   orientation: 'h' as const,
@@ -51,10 +29,38 @@ export const plotLegend = {
   bordercolor: '#ccc',
   borderwidth: 1,
 };
-export const plotMargin = { l: 90, r: 30, t: 90, b: 80 };
 export const plotTitle =  { family: 'Montserrat, Arial, sans-serif', size: 20 };
+export const plotMargin = { l: 90, r: 30, t: 90, b: 80 };
+export const movePlotDown = (margins: typeof plotMargin): typeof plotMargin => {
+  return { ...margins, t: (margins.t ?? 0) + 35, b: 20 };
+};
 
-export const MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+// Read the CSS variables at runtime to keep the single source of truth (`global.css`)
+export function getPalette() {
+  // Guard for SSR: `document` and `getComputedStyle` are only available in the browser. 
+  if (typeof window === 'undefined' || typeof document === 'undefined' || typeof getComputedStyle === 'undefined') {
+    return {
+      plotlyBlue: '',
+      plotlyOrange: '',
+      plotlyGreen: '',
+      plotlyRed: '',
+      plotlyPurple: '',
+      plotlyBrown: '',
+      plotlyYellow: '',
+    };
+  }
+  const s = getComputedStyle(document.documentElement);
+  const read = (name: string) => s.getPropertyValue(name).trim() || '';
+  return {
+    plotlyBlue: read('--plotly-blue'),
+    plotlyOrange: read('--plotly-orange'),
+    plotlyGreen: read('--plotly-green'),
+    plotlyRed: read('--plotly-red'),
+    plotlyPurple: read('--plotly-purple'),
+    plotlyBrown: read('--plotly-brown'),
+    plotlyYellow: read('--plotly-yellow'),
+  };
+}
 
 export const MILK_ONLY_KEYS: Record<MilkChannelsKey, string> = {
   milk_p: 'P  mléko polotučné [l]_timeseries',
@@ -68,8 +74,45 @@ export const DAIRY_RETAIL_KEYS: Record<string, string> = {
   butter_s: 'S  máslo [kg]_timeseries',
 };
 
-export const getChannelsKeysFor = (s: string): Record<string, string> => { return {
+export const DAIRY_RETAIL_OPTIONS = [
+  { value: 'dairyIndex', label: 'Dairy Index' },
+  { value: 'milk_s', label: 'Milk (S)' },
+  { value: 'edam_s', label: 'Edam (S)' },
+  { value: 'butter_s', label: 'Butter (S)' },
+];
+export const getChannelLabelFor = (s: string): Record<string, string> => { return {
   [`${s}_p`]: 'Industry (P)',
   [`${s}_s`]: 'Retail (S)',
   [`${s}_z`]: 'Farm-gate (Z)',
 };};
+
+export function productKeyToSeriesKey(key: AllDairyKeys) {
+  switch (key) {
+    case 'milk_p':
+      return 'P  mléko polotučné [l]_timeseries';
+    case 'milk_s':
+      return 'S  mléko polotučné pasterované [l]_timeseries';
+    case 'milk_z':
+      return 'Z  mléko kravské q. tř. j. [l]_timeseries';
+    case 'butter_p':
+      return 'P  máslo [kg]_timeseries';
+    case 'butter_s':
+      return 'S  máslo [kg]_timeseries';
+    case 'edam_p':
+      return 'P  eidamská cihla [kg]_timeseries';
+    case 'edam_s':
+      return 'S  eidamská cihla [kg]_timeseries';
+    default:
+      return '';
+  }
+}
+
+export const ALL_DAIRY_LABELS: Record<AllDairyKeys, string> = {
+  milk_p: 'Milk (P)',
+  milk_s: 'Milk (S)',
+  milk_z: 'Milk (Z)',
+  butter_p: 'Butter (P)',
+  butter_s: 'Butter (S)',
+  edam_p: 'Edam (P)',
+  edam_s: 'Edam (S)',
+};

@@ -1,4 +1,4 @@
-import type { TimePoint } from './types/types';
+import type { TimePoint } from './types';
 
 export type AggregationMethod = 'raw' | 'average' | 'sum' | 'min' | 'max' | 'median' | 'p95';
 export type TimeInterval = 'month' | 'quarter' | 'year';
@@ -71,5 +71,3 @@ export function aggregateSeries(
     .map(([date, values]) => ({ date, value: applyAggregation(values, aggregationMethod) }))
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 }
-
-export default aggregateSeries;
