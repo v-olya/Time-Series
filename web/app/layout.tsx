@@ -1,5 +1,5 @@
 import '../global.css';
-import Link from 'next/link';
+import AppNav from './components/AppNav';
 
 export const metadata = {
   title: 'Stats on raw materials for bakery products',
@@ -14,11 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       </head>
       <body>
-        <header className="app-home">
-          <Link href="/">
-            <span className="badge-primary">Home</span>
-          </Link>
-        </header>
+        <AppNav />
         {children}
       </body>
     </html>
