@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import React, { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import type { ProcessedData, TimePoint } from '../lib/types';
-import { Select } from './UI/Select';
-import { plotTitle, plotMargin, movePlotDown } from '../lib/const';
-import { averageForYear, buildFunnelTrace } from '../lib/plotlyUtils';
-import { extractSeriesByMapping, getYearSetFromSeriesData } from '../lib/helpers';
+import type { ProcessedData, TimePoint } from '../../lib/types';
+import { Select } from '../UI/Select';
+import { plotTitle, plotMargin, movePlotDown } from '../../lib/const';
+import { averageForYear, buildFunnelTrace } from '../../lib/plotlyUtils';
+import { extractSeriesByMapping, getYearSetFromSeriesData } from '../../lib/helpers';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -15,12 +15,12 @@ type FunnelProps = {
   mapping: Record<string, string>;
   channelOrder: string[]; // order: farm-gate (Z), industry (P), retail (S)
   labels: Record<string, string>;
-  getColors: () => Record<string, string>;
+  colors: Record<string, string>;
   titleHTML?: string;
   height?: number;
 };
 
-export function Funnel({ data, mapping, channelOrder, labels, getColors, titleHTML, height = 420 }: FunnelProps) {
+export function Funnel({ data, mapping, channelOrder, labels, colors, titleHTML, height = 420 }: FunnelProps) {
   const seriesData = useMemo(() => extractSeriesByMapping(data.series, mapping), [data.series, mapping]);
 
   const yearSet = useMemo(() => getYearSetFromSeriesData(seriesData), [seriesData]);
@@ -33,7 +33,7 @@ export function Funnel({ data, mapping, channelOrder, labels, getColors, titleHT
     setSelectedYear((prev) => (prev ? prev : yearSet[yearSet.length - 1]));
   }, [yearSet]);
 
-  const colorsMap = useMemo(() => getColors(), [getColors]);
+  const colorsMap = colors;
 
   const trace = useMemo(() => {
     if (!seriesData || yearSet.length === 0 || !selectedYear) return null;
@@ -83,5 +83,3 @@ export function Funnel({ data, mapping, channelOrder, labels, getColors, titleHT
     </div>
   );
 }
-
-export default Funnel;
