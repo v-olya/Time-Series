@@ -1,6 +1,6 @@
-import type { TimePoint, MilkChannelsKey } from './types';
-import { getPalette, averageYear } from './helpers';
-import type { FlourProductKey, EggProductKey } from './const';
+import type { TimePoint } from './types';
+import { getPalette, averageYear, hexToRgba } from './helpers';
+import type { FlourProductKey } from './const';
 import type * as Plotly from 'plotly.js';
 import type { ScatterData } from 'plotly.js';
 import { PlotParams } from 'react-plotly.js';
@@ -21,16 +21,19 @@ export function buildSeriesLineTrace(
   color: string,
   markerSize = 6,
   lineWidth = 2,
+  dash?: string,
+  mode: 'lines' | 'lines+markers' = 'lines+markers',
 ): Plotly.Data {
   const pts = points || [];
   return {
     x: pts.map((p) => p.date),
     y: pts.map((p) => p.value),
     type: 'scatter' as const,
-    mode: 'lines+markers' as const,
+    mode,
     name,
-    line: { color, width: lineWidth },
+    line: { color, width: lineWidth, ...(dash ? { dash } : {}) },
     marker: { size: markerSize, color },
+    hovertemplate: `%{x|%b %Y} ${name}: %{y:.2f}<extra></extra>`,
   } as Plotly.Data;
 }
 
@@ -179,4 +182,57 @@ export function buildFunnelTrace(
     customdata,
     hovertemplate,
   } as Plotly.Data;
+}
+
+export function buildForecastTraces(
+  points: TimePoint[] | undefined,
+  interval95?: { date: string; lower: number; upper: number }[] | undefined,
+  color?: string,
+  name?: string,
+): Plotly.Data[] {
+  if (!points || points.length === 0) return [];
+
+  const forecastLine = {
+    x: points.map((p) => p.date),
+    y: points.map((p) => p.value),
+    type: 'scatter' as const,
+    mode: 'lines' as const,
+    name: name ? `${name} (forecast)` : 'Forecast',
+    line: { color: color || '#000', width: 2, dash: 'dash' },
+    showlegend: false,
+    legendgroup: name ?? 'forecast',
+    hovertemplate: `%{x|%b %Y} ${name ? name + ' ' : ''}forecast: %{y:.2f}<extra></extra>`,
+  } as Plotly.Data;
+
+  if (!interval95 || interval95.length === 0) return [forecastLine];
+
+  // Build a single polygon trace for the filled band: upper followed by reversed lower.
+  const [dates, upper, lower] = interval95.reduce<[string[], number[], number[]]>(
+    (acc, { date, upper: u, lower: l }) => {
+      acc[0].push(date);
+      acc[1].push(u);
+      acc[2].push(l);
+      return acc;
+    },
+    [[], [], []],
+  );
+
+  const fillColor = color ? hexToRgba(color, 0.18) : undefined;
+
+  const bandX = [...dates, ...dates.slice().reverse()];
+  const bandY = [...upper, ...lower.slice().reverse()];
+
+  const bandTrace = {
+    x: bandX,
+    y: bandY,
+    type: 'scatter',
+    mode: 'lines',
+    fill: 'toself',
+    ...(fillColor ? { fillcolor: fillColor } : {}),
+    line: { width: 0 },
+    hoverinfo: 'skip',
+    showlegend: false,
+  } as Plotly.Data;
+
+  return [forecastLine, bandTrace];
 }
