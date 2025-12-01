@@ -4,10 +4,10 @@ import { useState, useMemo } from 'react';
 import type { ProcessedData } from '../../lib/types';
 import { Select } from '../UI/Select';
 import { MultiSelect } from '../UI/MultiSelect';
-import { aggregationOptions, intervalOptions, plotLegend, plotMargin, plotTitle } from '../../lib/const';
+import { aggregationOptions, plotLegend, plotMargin, plotTitle } from '../../lib/const';
 import { buildSeriesLineTrace, buildForecastTraces } from '../../lib/plotlyUtils';
 import { extractSeriesByMapping, getPalette } from '../../lib/helpers';
-import { aggregateSeries, AggregationMethod, TimeInterval } from '../../lib/aggregator';
+import { aggregateSeries, AggregationMethod } from '../../lib/aggregator';
 
 import PlotlyWrapper from './PlotlyWrapper';
 import type * as Plotly from 'plotly.js';
@@ -17,8 +17,8 @@ type ProductOption = { value: string; label: string };
 type ConfidenceLevel = '85' | '95';
 
 const confidenceOptions: { value: ConfidenceLevel; label: string }[] = [
-  { value: '95', label: '95%' },
   { value: '85', label: '85%' },
+  { value: '95', label: '95%' },
 ];
 
 function getProductsToShow<T extends string>(
@@ -61,7 +61,7 @@ function buildForecastData<T extends string>(
     const fc = forecasts?.[seriesKey];
     if (!fc || fc.length === 0) continue;
 
-    const aggregatedFc = aggregateSeries(fc, 'month', aggregationMethod) || [];
+    const aggregatedFc = aggregateSeries(fc, aggregationMethod) || [];
     const observedDates = observedDateKeys.get(productKey) || new Set<string>();
     const filteredFc = aggregatedFc.filter((p) => !observedDates.has(p.date));
     if (filteredFc.length === 0) continue;
@@ -128,7 +128,7 @@ export function TimeSeries<T extends string>({
     if (!seriesData) return map;
 
     for (const productKey of productsToShow) {
-      const points = aggregateSeries(seriesData[productKey], 'month', aggregationMethod) || [];
+      const points = aggregateSeries(seriesData[productKey], aggregationMethod) || [];
       map.set(productKey, points);
     }
 
@@ -147,7 +147,8 @@ export function TimeSeries<T extends string>({
   }, [seriesData, productsToShow, aggregatedSeries, colors, productLabels]);
 
   const forecastTrace = useMemo((): Plotly.Data[] | null => {
-    if (!showForecast || !seriesData || !forecasts) return null;
+    // Show forecasts only for raw (monthly) view
+    if (!showForecast || !seriesData || !forecasts || aggregationMethod !== 'raw') return null;
 
     const all = buildForecastData(
       productsToShow,
@@ -196,6 +197,7 @@ export function TimeSeries<T extends string>({
             label="Confidence:"
             value={confidenceLevel}
             onChange={(value) => setConfidenceLevel(value as ConfidenceLevel)}
+            disabled={aggregationMethod !== 'raw'}
             options={confidenceOptions}
           />
           {enableProductSelection && (
