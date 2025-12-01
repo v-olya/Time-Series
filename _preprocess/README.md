@@ -3,13 +3,44 @@
 This folder contains utilities to preprocess the merged CSVs and export JSON artifacts
 for the frontend.
 
-Usage (Windows PowerShell):
+Create a virtual environment:
+
+```bash
+python -m venv .venv
+```
+
+Activate (pick the variant that matches your shell):
+
+POSIX (macOS / Linux / WSL / Git Bash):
+
+```bash
+source .venv/bin/activate
+```
+
+Windows PowerShell:
 
 ```powershell
-python -m venv .venv
-.\.venv\Scripts\pip.exe install -r requirements.txt
-python export_processed_json.py
+.\.venv\Scripts\Activate.ps1
 ```
+
+Run the venv and execute the script:
+
+```bash
+python -m pip install -r _preprocess/requirements.txt
+python _preprocess/export_processed_json.py
+```
+
+
+Or, the same without activating the venv:
+
+```bash
+# POSIX
+.venv/bin/python -m pip install -r _preprocess/requirements.txt
+.venv/bin/python _preprocess/export_processed_json.py
+
+# Windows
+.venv\Scripts\python.exe -m pip install -r _preprocess\requirements.txt
+.venv\Scripts\python.exe _preprocess\export_processed_json.py
 
 Output:
 
