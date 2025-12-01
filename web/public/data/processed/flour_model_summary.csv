@@ -1,0 +1,6 @@
+series,order,seasonal_order,method,reason
+P  pšeničná mouka chlebová [kg]_timeseries,"1,1,1","0,0,1,12",aic_grid,AIC preferred seasonal
+P  pšeničná mouka hladká 00 extra [kg]_timeseries,"1,1,1","1,0,1,12",aic_grid,AIC preferred seasonal
+S  pšeničná mouka hladká [kg]_timeseries,"1,1,1","0,1,1,12",aic_grid,AIC preferred seasonal
+Z  pšenice potravinářská [kg]_timeseries,"1,1,1","1,0,0,12",aic_grid,AIC preferred seasonal
+flourIndex,"1,1,1","0,0,0,12",aic_grid,AIC preferred non-seasonal

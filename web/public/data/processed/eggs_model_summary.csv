@@ -1,0 +1,4 @@
+series,order,seasonal_order,method,reason
+S  vejce slepičí čerstvá [ks]_timeseries,"1,1,0","0,0,0,12",aic_grid,AIC preferred non-seasonal
+Z  vejce slepičí konzumní tříděná [ks]_timeseries,"1,1,1","0,0,0,12",aic_grid,AIC preferred non-seasonal
+eggsIndex,"1,1,0","0,0,0,12",aic_grid,AIC preferred non-seasonal

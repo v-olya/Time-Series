@@ -1,0 +1,9 @@
+series,order,seasonal_order,method,reason
+P  eidamská cihla [kg]_timeseries,"1,1,1","0,1,1,12",aic_grid,AIC preferred seasonal
+P  mléko polotučné [l]_timeseries,"1,1,1","0,0,0,12",aic_grid,AIC preferred non-seasonal
+P  máslo [kg]_timeseries,"1,1,1","0,1,1,12",aic_grid,AIC preferred seasonal
+S  eidamská cihla [kg]_timeseries,"1,1,1","0,1,1,12",aic_grid,AIC preferred seasonal
+S  mléko polotučné pasterované [l]_timeseries,"0,1,1","0,0,1,12",aic_grid,AIC preferred seasonal
+S  máslo [kg]_timeseries,"1,1,1","0,1,1,12",aic_grid,AIC preferred seasonal
+Z  mléko kravské q. tř. j. [l]_timeseries,"1,1,0","1,0,1,12",aic_grid,AIC preferred seasonal
+dairyIndex,"1,1,1","0,1,1,12",aic_grid,AIC preferred seasonal
