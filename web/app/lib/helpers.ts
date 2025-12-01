@@ -166,6 +166,32 @@ export function mapColorsToPalette(colorKeys: Record<string, string>, palette: P
   );
 }
 
+// Convert hex or rgb color string to rgba with the provided alpha.
+export function hexToRgba(hex: string, alpha = 0.15) {
+  try {
+    let h = (hex || '').trim();
+    if (h.startsWith('var(') || h === '') h = '#666666';
+    if (h.startsWith('#')) {
+      const c = h.substring(1);
+      const full = c.length === 3 ? c.split('').map((ch) => ch + ch).join('') : c;
+      const bigint = parseInt(full, 16);
+      const r = (bigint >> 16) & 255;
+      const g = (bigint >> 8) & 255;
+      const b = bigint & 255;
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+    if (h.startsWith('rgb')) {
+      return h.replace(/rgba?\(([^)]+)\)/, (m: string, inner: string) => {
+        const parts = inner.split(',').map((s: string) => s.trim());
+        return `rgba(${parts[0]}, ${parts[1]}, ${parts[2]}, ${alpha})`;
+      });
+    }
+    return `rgba(102,102,102,${alpha})`;
+  } catch (e) {
+    return `rgba(102,102,102,${alpha})`;
+  }
+}
+
 export function bucketBySeason(
   xs: number[],
   ys: number[],
