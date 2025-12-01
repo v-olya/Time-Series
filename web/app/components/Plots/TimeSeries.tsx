@@ -1,18 +1,83 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import type { ProcessedData } from '../../lib/types';
 import { Select } from '../UI/Select';
 import { MultiSelect } from '../UI/MultiSelect';
 import { aggregationOptions, intervalOptions, plotLegend, plotMargin, plotTitle } from '../../lib/const';
-import { buildSeriesLineTrace } from '../../lib/plotlyUtils';
-import { extractSeriesByMapping } from '../../lib/helpers';
+import { buildSeriesLineTrace, buildForecastTraces } from '../../lib/plotlyUtils';
+import { extractSeriesByMapping, getPalette } from '../../lib/helpers';
 import { aggregateSeries, AggregationMethod, TimeInterval } from '../../lib/aggregator';
 
 import PlotlyWrapper from './PlotlyWrapper';
+import type * as Plotly from 'plotly.js';
 
 type ProductOption = { value: string; label: string };
+
+type ConfidenceLevel = '85' | '95';
+
+const confidenceOptions: { value: ConfidenceLevel; label: string }[] = [
+  { value: '95', label: '95%' },
+  { value: '85', label: '85%' },
+];
+
+function getProductsToShow<T extends string>(
+  allProductKeys: T[],
+  selectedProducts: T[],
+  enableProductSelection: boolean,
+): T[] {
+  return enableProductSelection ? selectedProducts : allProductKeys;
+}
+
+function useObservedDateKeys<T extends string>(
+  aggregatedSeries: Map<T, { date: string; value: number }[]>,
+) {
+  return useMemo(() => {
+    const map = new Map<T, Set<string>>();
+    for (const [productKey, points] of aggregatedSeries.entries()) {
+      map.set(productKey, new Set(points.map((p) => p.date)));
+    }
+    return map;
+  }, [aggregatedSeries]);
+}
+
+function buildForecastData<T extends string>(
+  productsToShow: T[],
+  seriesMapping: Record<T, string>,
+  forecasts: ProcessedData['forecasts'],
+  forecastIntervals: ProcessedData['forecastIntervals'],
+  observedDateKeys: Map<T, Set<string>>,
+  aggregationMethod: AggregationMethod,
+  colors: Record<T, string>,
+  palette: ReturnType<typeof getPalette>,
+  productLabels: Record<T, string>,
+  confidenceLevel: ConfidenceLevel,
+): Plotly.Data[] {
+  if (!forecasts) return [];
+
+  const all: Plotly.Data[] = [];
+  for (const productKey of productsToShow) {
+    const seriesKey = seriesMapping[productKey];
+    const fc = forecasts?.[seriesKey];
+    if (!fc || fc.length === 0) continue;
+
+    const aggregatedFc = aggregateSeries(fc, 'month', aggregationMethod) || [];
+    const observedDates = observedDateKeys.get(productKey) || new Set<string>();
+    const filteredFc = aggregatedFc.filter((p) => !observedDates.has(p.date));
+    if (filteredFc.length === 0) continue;
+
+    const iv = forecastIntervals?.[seriesKey]?.[confidenceLevel];
+    const traces = buildForecastTraces(
+      filteredFc,
+      iv,
+      colors[productKey] || palette.plotlyBrown,
+      productLabels[productKey],
+    );
+    all.push(...traces);
+  }
+
+  return all;
+}
 
 type Props<T extends string> = {
   data: ProcessedData;
@@ -24,6 +89,7 @@ type Props<T extends string> = {
   title: string;
   yAxisTitle: string;
   enableProductSelection?: boolean;
+  showForecast?: boolean;
   defaultSelectedProducts?: T[];
 };
 
@@ -37,25 +103,80 @@ export function TimeSeries<T extends string>({
   title,
   yAxisTitle,
   enableProductSelection = false,
+  showForecast = true,
   defaultSelectedProducts,
 }: Props<T>) {
   const [aggregationMethod, setAggregationMethod] = useState<AggregationMethod>('raw');
-  const [timeInterval, setTimeInterval] = useState<TimeInterval>('month');
   const [selectedProducts, setSelectedProducts] = useState<T[]>(
     defaultSelectedProducts || (enableProductSelection ? productKeys.slice(0, 2) : productKeys),
   );
+  const [confidenceLevel, setConfidenceLevel] = useState<ConfidenceLevel>('85');
 
   const seriesData = useMemo(() => extractSeriesByMapping(data.series, seriesMapping), [data.series, seriesMapping]);
+
+  const palette = useMemo(() => getPalette(), []);
+  const forecasts = data.forecasts;
+  const forecastIntervals = data.forecastIntervals;
+
+  const productsToShow = useMemo(
+    () => getProductsToShow(productKeys, selectedProducts, enableProductSelection),
+    [productKeys, selectedProducts, enableProductSelection],
+  );
+
+  const aggregatedSeries = useMemo(() => {
+    const map = new Map<typeof productKeys[number], { date: string; value: number }[]>();
+    if (!seriesData) return map;
+
+    for (const productKey of productsToShow) {
+      const points = aggregateSeries(seriesData[productKey], 'month', aggregationMethod) || [];
+      map.set(productKey, points);
+    }
+
+    return map;
+  }, [seriesData, productsToShow, aggregationMethod]);
+
+  const observedDateKeys = useObservedDateKeys(aggregatedSeries);
 
   const traces = useMemo(() => {
     if (!seriesData) return [];
 
-    const productsToShow = enableProductSelection ? selectedProducts : productKeys;
     return productsToShow.map((productKey) => {
-      const points = aggregateSeries(seriesData[productKey], timeInterval, aggregationMethod) || [];
+      const points = aggregatedSeries.get(productKey) || [];
       return buildSeriesLineTrace(points, productLabels[productKey], colors[productKey], 6, 2);
     });
-  }, [seriesData, selectedProducts, productKeys, enableProductSelection, aggregationMethod, timeInterval, colors, productLabels]);
+  }, [seriesData, productsToShow, aggregatedSeries, colors, productLabels]);
+
+  const forecastTrace = useMemo((): Plotly.Data[] | null => {
+    if (!showForecast || !seriesData || !forecasts) return null;
+
+    const all = buildForecastData(
+      productsToShow,
+      seriesMapping,
+      forecasts,
+      forecastIntervals,
+      observedDateKeys,
+      aggregationMethod,
+      colors,
+      palette,
+      productLabels,
+      confidenceLevel,
+    );
+
+    return all.length ? all : null;
+  }, [
+    showForecast,
+    seriesData,
+    productsToShow,
+    seriesMapping,
+    colors,
+    productLabels,
+    forecasts,
+    forecastIntervals,
+    palette,
+    confidenceLevel,
+    aggregationMethod,
+    observedDateKeys,
+  ]);
 
   if (!seriesData) {
     return <div className="empty-state">No data available</div>;
@@ -71,11 +192,11 @@ export function TimeSeries<T extends string>({
       <div className="card plot-container">
         <div className="plot-controls">
           <Select
-            id="interval"
-            label="Interval:"
-            value={timeInterval}
-            onChange={(value) => setTimeInterval(value as TimeInterval)}
-            options={intervalOptions}
+            id="confidence"
+            label="Confidence:"
+            value={confidenceLevel}
+            onChange={(value) => setConfidenceLevel(value as ConfidenceLevel)}
+            options={confidenceOptions}
           />
           {enableProductSelection && (
             <MultiSelect
@@ -96,7 +217,7 @@ export function TimeSeries<T extends string>({
         </div>
 
         <PlotlyWrapper
-          data={traces}
+          data={forecastTrace ? [...traces, ...forecastTrace] : traces}
           layout={{
             height,
             title: { text: title, font: plotTitle },
@@ -104,9 +225,11 @@ export function TimeSeries<T extends string>({
               type: 'date',
               dtick: 'M12',
               tickformat: '%Y',
+              spikemode: 'across',
             },
             yaxis: { title: { text: yAxisTitle } },
-            hovermode: 'x unified' as const,
+            hovermode: 'x' as const,
+            hoverdistance: 1,
             showlegend: true,
             legend: plotLegend,
             margin: plotMargin,
