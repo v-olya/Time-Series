@@ -1,9 +1,9 @@
 import fs from 'fs';
 import path from 'path';
-import { Teaser } from '../components/UI/Teaser';
-import { TeaserGroup} from '../components/UI/TeaserGroup';
-import { Intro } from '../components/UI/Intro';
-import type { ProcessedData, SeriesMap, TimePoint } from '../lib/types';
+import { Teaser } from './components/UI/Teaser';
+import { TeaserGroup} from './components/UI/TeaserGroup';
+import { Intro } from './components/UI/Intro';
+import type { ProcessedData, SeriesMap, TimePoint } from './lib/types';
 
 export default function HomePage() {
   const readJson = (name: string): ProcessedData | null => {

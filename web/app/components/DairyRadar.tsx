@@ -2,11 +2,11 @@
 
 import { useMemo } from 'react';
 import type { ProcessedData } from '../lib/types';
-import { productKeyToSeriesKey, ALL_DAIRY_LABELS } from 'lib/const';
-import { getPalette } from 'lib/helpers';
-import type { Palette } from 'lib/types';
+import { productKeyToSeriesKey, ALL_DAIRY_LABELS } from 'app/lib/const';
+import { getPalette } from 'app/lib/helpers';
+import type { Palette } from 'app/lib/types';
 import { RadarYearly, type RadarItem } from './Plots/RadarYearly';
-import { DAIRY_RADAR_KEYS, DAIRY_RADAR_COLOR_KEYS } from 'lib/const';
+import { DAIRY_RADAR_KEYS, DAIRY_RADAR_COLOR_KEYS } from 'app/lib/const';
 
 type Props = { data: ProcessedData; height: number };
 

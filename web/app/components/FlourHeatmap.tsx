@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import type { ProcessedData } from '../lib/types';
-import { FLOUR_PRODUCT_SERIES_MAPPING, FLOUR_PRODUCT_LABELS, type FlourProductKey, HEATMAP_TITLE } from 'lib/const';
+import { FLOUR_PRODUCT_SERIES_MAPPING, FLOUR_PRODUCT_LABELS, type FlourProductKey, HEATMAP_TITLE } from 'app/lib/const';
 import { Heatmap } from './Plots/Heatmap';
 
 type Props = { data: ProcessedData; height?: number };

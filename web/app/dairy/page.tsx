@@ -1,13 +1,13 @@
 import fs from 'fs';
 import path from 'path';
-import type { ProcessedData } from '../../lib/types';
-import { DairyAcrossChannels } from 'components/DairyAcrossChannels';
-import { MilkOnlyAcrossChannels } from 'components/MilkOnlyAcrossChannels';
-import { DairyHeatmap}  from 'components/DairyHeatmap';
-import { MilkOnlyFunnel} from 'components/MilkOnlyFunnel';
-import { DairyWaterfall } from 'components/DairyWaterfall';
-import { DairyScatter } from 'components/DairyScatter';
-import { DairyRadar } from 'components/DairyRadar';
+import type { ProcessedData } from '../lib/types';
+import { DairyAcrossChannels } from '../components/DairyAcrossChannels';
+import { MilkOnlyAcrossChannels } from '../components/MilkOnlyAcrossChannels';
+import { DairyHeatmap}  from '../components/DairyHeatmap';
+import { MilkOnlyFunnel} from '../components/MilkOnlyFunnel';
+import { DairyWaterfall } from '../components/DairyWaterfall';
+import { DairyScatter } from '../components/DairyScatter';
+import { DairyRadar } from '../components/DairyRadar';
 
 export default function DairyPage() {
   const filePath = path.join(process.cwd(), 'public', 'data', 'processed', 'dairy_eda.json');

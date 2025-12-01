@@ -1,6 +1,6 @@
 import '../global.css';
-import AppNav from './components/AppNav';
-import PlotlyPurger from '../components/Plots/PlotlyPurger';
+import AppNav from './components/UI/AppNav';
+import PlotlyPurger from './components/Plots/PlotlyPurger';
 
 export const metadata = {
   title: 'Stats for bakery ingredients',

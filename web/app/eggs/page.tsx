@@ -1,11 +1,11 @@
 import fs from 'fs';
 import path from 'path';
-import type { ProcessedData } from '../../lib/types';
-import { EggsAcrossChannels } from 'components/EggsAcrossChannels';
-import { EggsScatter } from 'components/EggsScatter';
-import { EggsRadar } from 'components/EggsRadar';
-import { EggsHeatmap } from 'components/EggsHeatmap';
-import { EggsWaterfall } from 'components/EggsWaterfall';
+import type { ProcessedData } from '../lib/types';
+import { EggsAcrossChannels } from '../components/EggsAcrossChannels';
+import { EggsScatter } from '../components/EggsScatter';
+import { EggsRadar } from '../components/EggsRadar';
+import { EggsHeatmap } from '../components/EggsHeatmap';
+import { EggsWaterfall } from '../components/EggsWaterfall';
 
 export default function EggsPage() {
   const filePath = path.join(process.cwd(), 'public', 'data', 'processed', 'eggs_eda.json');
