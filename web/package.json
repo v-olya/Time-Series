@@ -11,9 +11,7 @@
     "format": "eslint . --ext .ts,.tsx,.js,.jsx --fix --fix-type layout"
   },
   "dependencies": {
-    "@tensorflow/tfjs": "^4.22.0",
     "next": "^16.0.5",
-    "papaparse": "^5.5.3",
     "plotly.js-basic-dist": "^3.3.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
@@ -21,7 +19,6 @@
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
-    "@types/papaparse": "^5.5.0",
     "@types/react": "^19.2.7",
     "@types/react-plotly.js": "^2.6.3",
     "@typescript-eslint/eslint-plugin": "^8.48.0",
