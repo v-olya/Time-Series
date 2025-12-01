@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import type { ProcessedData } from '../lib/types';
+import { mergeForecastsIntoData } from '../lib/loadForecasts.server';
 import { FlourAcrossChannels } from '../components/FlourAcrossChannels';
 import { FlourScatter } from '../components/FlourScatter';
 import { FlourRadar } from '../components/FlourRadar';
@@ -12,6 +13,7 @@ export default function FlourPage() {
   const filePath = path.join(process.cwd(), 'public', 'data', 'processed', 'flour_eda.json');
   const raw = fs.readFileSync(filePath, 'utf8');
   const data = JSON.parse(raw) as ProcessedData;
+  mergeForecastsIntoData(data, 'flour');
 
   return (
     <>

@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import type { ProcessedData } from '../lib/types';
+import { mergeForecastsIntoData } from '../lib/loadForecasts.server';
 import { DairyAcrossChannels } from '../components/DairyAcrossChannels';
 import { MilkOnlyAcrossChannels } from '../components/MilkOnlyAcrossChannels';
 import { DairyHeatmap}  from '../components/DairyHeatmap';
@@ -13,6 +14,7 @@ export default function DairyPage() {
   const filePath = path.join(process.cwd(), 'public', 'data', 'processed', 'dairy_eda.json');
   const raw = fs.readFileSync(filePath, 'utf8');
   const data = JSON.parse(raw) as ProcessedData;
+  mergeForecastsIntoData(data, 'dairy');
 
   return <>
     <MilkOnlyAcrossChannels data={data} height={600} />

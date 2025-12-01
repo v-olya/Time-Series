@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import type { ProcessedData } from '../lib/types';
+import { mergeForecastsIntoData } from '../lib/loadForecasts.server';
 import { EggsAcrossChannels } from '../components/EggsAcrossChannels';
 import { EggsScatter } from '../components/EggsScatter';
 import { EggsRadar } from '../components/EggsRadar';
@@ -11,6 +12,9 @@ export default function EggsPage() {
   const filePath = path.join(process.cwd(), 'public', 'data', 'processed', 'eggs_eda.json');
   const raw = fs.readFileSync(filePath, 'utf8');
   const data = JSON.parse(raw) as ProcessedData;
+
+  // Merge small forecasts JSON (written by preprocessing) if available.
+  mergeForecastsIntoData(data, 'eggs');
 
   return (
     <>
