@@ -2,18 +2,10 @@ import { AllDairyKeys, MilkChannelsKey } from './types';
 
 export const aggregationOptions = [
   { value: 'raw', label: 'Raw data' },
-  { value: 'average', label: 'Average' },
-  { value: 'sum', label: 'Sum' },
-  { value: 'min', label: 'Min' },
-  { value: 'max', label: 'Max' },
-  { value: 'median', label: 'Median' },
-  { value: 'p95', label: 'P95' },
-];
-
-export const intervalOptions = [
-  { value: 'month', label: 'Month' },
-  { value: 'quarter', label: 'Quarter' },
-  { value: 'year', label: 'Year' },
+  { value: 'average', label: 'Average per year' },
+  { value: 'min', label: 'Min per year' },
+  { value: 'max', label: 'Max per year' },
+  { value: 'median', label: 'Median per year' },
 ];
 
 export const MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];

@@ -1,7 +1,6 @@
 import type { TimePoint } from './types';
 
-export type AggregationMethod = 'raw' | 'average' | 'sum' | 'min' | 'max' | 'median' | 'p95';
-export type TimeInterval = 'month' | 'quarter' | 'year';
+export type AggregationMethod = 'raw' | 'average' | 'min' | 'max' | 'median';
 
 function applyAggregation(values: number[], method: AggregationMethod): number {
   if (method === 'raw' || values.length === 0) {
@@ -13,8 +12,6 @@ function applyAggregation(values: number[], method: AggregationMethod): number {
   switch (method) {
     case 'average':
       return values.reduce((a, b) => a + b, 0) / values.length;
-    case 'sum':
-      return values.reduce((a, b) => a + b, 0);
     case 'min':
       return sorted[0] ?? 0;
     case 'max':
@@ -24,10 +21,6 @@ function applyAggregation(values: number[], method: AggregationMethod): number {
       return sorted.length % 2 === 0
         ? (sorted[mid - 1] + sorted[mid]) / 2
         : sorted[mid];
-    }
-    case 'p95': {
-      const index = Math.ceil(sorted.length * 0.95) - 1;
-      return sorted[Math.max(0, Math.min(index, sorted.length - 1))] ?? 0;
     }
     default:
       return values[0] ?? 0;
@@ -41,27 +34,19 @@ function monthKey(date: Date): string {
 
 export function aggregateSeries(
   points: TimePoint[],
-  timeInterval: TimeInterval,
   aggregationMethod: AggregationMethod,
 ): TimePoint[] {
-  if (timeInterval === 'month' && aggregationMethod === 'raw') {
+  // Raw: return original monthly series
+  if (aggregationMethod === 'raw') {
     return points.slice().sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   }
 
+  // Non-raw: aggregate by calendar year
   const grouped: Record<string, number[]> = {};
 
   points.forEach((point) => {
     const date = new Date(point.date);
-    let key: string;
-
-    if (timeInterval === 'quarter') {
-      const quarter = Math.floor(date.getMonth() / 3);
-      key = `${date.getFullYear()}-Q${quarter + 1}`;
-    } else if (timeInterval === 'year') {
-      key = `${date.getFullYear()}`;
-    } else {
-      key = monthKey(date);
-    }
+    const key = `${date.getFullYear()}`;
 
     if (!grouped[key]) grouped[key] = [];
     grouped[key].push(point.value);
