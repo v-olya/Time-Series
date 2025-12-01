@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import type { ProcessedData } from '../lib/types';
-import { mergeForecastsIntoData } from '../lib/loadForecasts.server';
+import { mergeForecastsIntoData } from '../lib/loadForecasts';
 import { DairyAcrossChannels } from '../components/DairyAcrossChannels';
 import { MilkOnlyAcrossChannels } from '../components/MilkOnlyAcrossChannels';
 import { DairyHeatmap}  from '../components/DairyHeatmap';
