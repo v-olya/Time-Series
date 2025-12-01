@@ -1,7 +1,12 @@
-r"""For each category, reads CSVs in `web/public/data/`, 
-computes transforms (parse dates, standard scaling, 12-month rolling mean/std, STL decomposition, ACF) 
-and writes `web/public/data/processed/{category}_eda.json`.
+r"""For each category, reads CSVs in `web/public/data/`,
+computes transforms (parse dates, standard scaling, 12-month rolling mean/std,
+STL decomposition, ACF) and writes:
 
+* `web/public/data/processed/{category}_eda.json` - EDA artefacts
+* `web/public/data/processed/{category}_forecasts.json` - SARIMAX forecasts
+* `web/public/data/processed/{category}_model_summary.csv` - chosen model specs
+
+All forecasts are generated for a 6-month horizon.
 """
 from pathlib import Path
 import json
@@ -100,10 +105,9 @@ def process_file(name: str, path: Path):
         "metrics": {},
     }
 
-    # Generate SARIMAX forecasts for every column
-    # Return (pred_mean, conf_85, conf_95) where each is pandas Series
-    # For confidence interval, we return DataFrame with columns ['lower','upper']
-    def generate_forecast_with_intervals(series: pd.Series, periods: int = 12):
+    # Generate SARIMAX forecasts for every numeric column.
+    # Returns (predicted_mean, conf_85, conf_95, model_info)
+    def generate_forecast_with_intervals(series: pd.Series, periods: int = 6):
 
         s = series.dropna().astype(float)
         if s.empty or len(s) < 12:
@@ -165,10 +169,10 @@ def process_file(name: str, path: Path):
                 model_info = {"order": best_order, "seasonal_order": best_seasonal, "method": "aic_grid"}
 
             pred = res.get_forecast(steps=periods)
-            pred_mean = pred.predicted_mean
+            predicted_mean = pred.predicted_mean
             last = s.index[-1]
             future_idx = pd.date_range(last + pd.offsets.MonthBegin(1), periods=periods, freq='MS')
-            pred_mean.index = future_idx
+            predicted_mean.index = future_idx
 
             # 85% and 95% intervals
             ci85 = pred.conf_int(alpha=0.15)
@@ -176,13 +180,14 @@ def process_file(name: str, path: Path):
             ci85.index = future_idx
             ci95.index = future_idx
 
-            return pred_mean, ci85, ci95, model_info
+            return predicted_mean, ci85, ci95, model_info
         except Exception:
             return None, None, None, None
 
     forecasts = {}
     forecast_intervals = {}
     forecast_models = {}
+    # Fixed 6-month forecasts
     periods = 6
     for col in numeric.columns:
         try:
