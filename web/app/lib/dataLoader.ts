@@ -1,31 +1,29 @@
 import fs from 'fs';
 import path from 'path';
-import type { ProcessedData, TimePoint } from './types';
+import { cacheLife } from 'next/cache';
+import type { ForecastItem, ProcessedData, TimePoint } from './types';
 
-type ForecastItem = {
-  date: string;
-  value: number | null;
-  lower_85?: number | null;
-  upper_85?: number | null;
-  lower_95?: number | null;
-  upper_95?: number | null;
-  [k: string]: unknown;
-};
+export async function getProcessedData(name: string) {
+  'use cache';
+  cacheLife('hours');
+  const filePath = path.join(process.cwd(), 'public', 'data', 'processed', `${name}_eda.json`);
+  const raw = fs.readFileSync(filePath, 'utf8');
+  const data = JSON.parse(raw) as ProcessedData;
+  mergeForecastsIntoData(data, name);
+  return data;
+}
 
-type TinyFile = { forecasts?: Record<string, ForecastItem[]> };
-
-export function mergeForecastsIntoData(data: ProcessedData, name: string): ProcessedData {
+function mergeForecastsIntoData(data: ProcessedData, name: string): ProcessedData {
   const fcPath = path.join(process.cwd(), 'public', 'data', 'processed', `${name}_forecasts.json`);
   try {
     if (!fs.existsSync(fcPath)) return data;
     const raw = fs.readFileSync(fcPath, 'utf8');
-    const tiny = JSON.parse(raw) as TinyFile;
+    const tiny = JSON.parse(raw) as { forecasts?: Record<string, ForecastItem[]> };
     if (!tiny?.forecasts) return data;
 
     const converted: Record<string, TimePoint[]> = {};
     const intervals: Record<string, Record<'85' | '95', { date: string; lower: number; upper: number }[]>> = {};
 
-    // helper: pick first present key and coerce to finite number or NaN
     const getNumeric = (obj: ForecastItem, ...keys: (keyof ForecastItem | string)[]): number => {
       const record = obj as unknown as Record<string, unknown>;
       const raw = keys.reduce<unknown | undefined>((acc, k) => acc ?? record[String(k)], undefined);
@@ -56,9 +54,8 @@ export function mergeForecastsIntoData(data: ProcessedData, name: string): Proce
     }
     data.forecasts = converted;
     data.forecastIntervals = intervals as unknown as ProcessedData['forecastIntervals'];
-
-    return data;
-  } catch (err) {
+  } catch {//ignore
+  } finally {
     return data;
   }
 }

@@ -1,24 +1,13 @@
-import fs from 'fs';
-import path from 'path';
+import { getProcessedData } from './lib/dataLoader';
 import { Teaser } from './components/UI/Teaser';
 import { TeaserGroup} from './components/UI/TeaserGroup';
 import { Intro } from './components/UI/Intro';
 import type { ProcessedData, SeriesMap, TimePoint } from './lib/types';
 
-export default function HomePage() {
-  const readJson = (name: string): ProcessedData | null => {
-    const filePath = path.join(process.cwd(), 'public', 'data', 'processed', name);
-    try {
-      const raw = fs.readFileSync(filePath, 'utf8');
-      return JSON.parse(raw) as ProcessedData;
-    } catch (e) {
-      return null;
-    }
-  };
-
-  const dairy = readJson('dairy_eda.json');
-  const flour = readJson('flour_eda.json');
-  const eggs = readJson('eggs_eda.json');
+export default async function HomePage() {
+  const dairy = await getProcessedData('dairy');
+  const flour = await getProcessedData('flour');
+  const eggs = await getProcessedData('eggs');
 
   const dairySeries = (dairy?.series ?? {}) as SeriesMap;
   // Use end-consumer price series (S-columns)

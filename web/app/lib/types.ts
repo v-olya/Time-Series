@@ -1,10 +1,22 @@
 export type TimePoint = { date: string; value: number };
 export type SeriesMap = Record<string, TimePoint[]>;
-export type Decomposition = {
+
+export type ForecastItem = {
+  date: string;
+  value: number | null;
+  lower_85?: number | null;
+  upper_85?: number | null;
+  lower_95?: number | null;
+  upper_95?: number | null;
+  [k: string]: unknown;
+};
+
+type Decomposition = {
   trend?: TimePoint[];
   seasonal?: TimePoint[];
   resid?: TimePoint[];
 };
+
 export type ProcessedData = {
   meta?: { series?: string; category?: string };
   timeSeries: TimePoint[];

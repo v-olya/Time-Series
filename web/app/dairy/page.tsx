@@ -1,7 +1,4 @@
-import fs from 'fs';
-import path from 'path';
-import type { ProcessedData } from '../lib/types';
-import { mergeForecastsIntoData } from '../lib/loadPrecomputedForecasts';
+import { getProcessedData } from '../lib/dataLoader';
 import { LazyPlot } from '../components/Plots/LazyPlot';
 import { DairyAcrossChannels } from '../components/DairyAcrossChannels';
 import { MilkOnlyAcrossChannels } from '../components/MilkOnlyAcrossChannels';
@@ -11,11 +8,8 @@ import { DairyWaterfall } from '../components/DairyWaterfall';
 import { DairyScatter } from '../components/DairyScatter';
 import { DairyRadar } from '../components/DairyRadar';
 
-export default function DairyPage() {
-  const filePath = path.join(process.cwd(), 'public', 'data', 'processed', 'dairy_eda.json');
-  const raw = fs.readFileSync(filePath, 'utf8');
-  const data = JSON.parse(raw) as ProcessedData;
-  mergeForecastsIntoData(data, 'dairy');
+export default async function DairyPage() {
+  const data = await getProcessedData('dairy');
 
   return (
     <>

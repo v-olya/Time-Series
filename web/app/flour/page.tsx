@@ -1,7 +1,4 @@
-import fs from 'fs';
-import path from 'path';
-import type { ProcessedData } from '../lib/types';
-import { mergeForecastsIntoData } from '../lib/loadPrecomputedForecasts';
+import { getProcessedData } from '../lib/dataLoader';
 import { LazyPlot } from '../components/Plots/LazyPlot';
 import { FlourAcrossChannels } from '../components/FlourAcrossChannels';
 import { FlourScatter } from '../components/FlourScatter';
@@ -10,11 +7,8 @@ import { FlourHeatmap } from '../components/FlourHeatmap';
 import { FlourWaterfall } from '../components/FlourWaterfall';
 import { FlourFunnel } from '../components/FlourFunnel';
 
-export default function FlourPage() {
-  const filePath = path.join(process.cwd(), 'public', 'data', 'processed', 'flour_eda.json');
-  const raw = fs.readFileSync(filePath, 'utf8');
-  const data = JSON.parse(raw) as ProcessedData;
-  mergeForecastsIntoData(data, 'flour');
+export default async function FlourPage() {
+  const data = await getProcessedData('flour');
 
   return (
     <>
