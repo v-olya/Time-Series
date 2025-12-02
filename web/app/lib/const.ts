@@ -172,4 +172,5 @@ export enum ML_TRAINING_MESSSAGES {
               ML uses a dense neural network that may capture different patterns.
               Compare both to cross-validate.`,
   NOT_ENOUGH_DATA = 'Not enough data to train ML model',
+  SUCCESS = 'TensorFlow forecasts are ready and will be added to the plot'
 }
