@@ -88,7 +88,16 @@ h4 {
   border: 2px solid var(--plotly-blue);
 }
 
-/* Small utility to vertically stack items without repeating layout */
+.badge-button {
+  border: 0;
+  cursor: pointer;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  box-shadow: none;
+  font-size: 1rem;
+}
+
 .vstack {
   display: flex;
   flex-direction: column;
@@ -102,10 +111,8 @@ h4 {
   border-radius: 5px;
 }
 
-/* Groups and responsive teaser grid */
 .group {
   margin: 2.5em auto;
-  /* Constrain group width so the heading lines up with the centered cards */
   padding-left: 1rem;
   padding-right: 1rem;
 }
@@ -121,7 +128,6 @@ h4 {
 
 .cards-grid {
   display: grid;
-  /* Limit to at most 2 columns; each column will be at least 320px wide */
   grid-template-columns: repeat(2, minmax(320px, 1fr));
   gap: 2em;
   align-items: start;
@@ -167,10 +173,22 @@ h4 {
   margin-top: 1rem;
 }
 
-.plot-controls,
+.plot-controls {
+  z-index: 90; /* lower than Plotly modebar so modebar stays on top */
+}
+
 .overlay,
 .ms-dropdown {
   z-index: 999;
+}
+
+/* icon inside badge buttons (used by Train) */
+.train-icon {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  margin-right: 0.45rem;
+  vertical-align: -2px;
 }
 
 .control-group {
@@ -302,7 +320,6 @@ select {
   box-shadow: 0 6px 20px var(--shadow-2);
 }
 
-/* Top-left home badge to reuse MultiSelect badge styles */
 .app-nav {
   position: fixed;
   top: 1.5rem;
@@ -326,7 +343,6 @@ select {
   gap: 0.35rem;
 }
 
-/* Nav icons (vertical stack) */
 .app-nav a.nav-icon {
   display: inline-flex;
   align-items: center;
@@ -344,12 +360,12 @@ select {
   transition: filter 140ms ease, opacity 140ms ease;
 }
 
-/* Active/current page: primary background */
 .app-nav a.nav-icon.active {
   background: var(--plotly-blue);
 }
 
-.app-nav a.nav-icon.active img {
+.app-nav a.nav-icon.active img, 
+.train-icon {
   filter: brightness(0) invert(1);
 }
 
@@ -368,7 +384,7 @@ select {
   color: var(--muted);
 }
 
-/* Specify position for scatter controls */
+/* Specify position, used for controls */
 .right-corner {
   top: 2rem;
   right: 25%;
