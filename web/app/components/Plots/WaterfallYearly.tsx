@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import type { ProcessedData, TimePoint } from '../../lib/types';
-import { getPalette } from '../../lib/helpers';
+import { PALETTE } from '../../lib/generatedPalette';
 import { Select } from '../UI/Select';
 import { movePlotDown, plotMargin, plotTitle } from '../../lib/const';
 import { averageForYear, buildWaterfallTrace, WaterfallCustomDatum } from '../../lib/plotlyUtils';
@@ -21,6 +21,8 @@ type Props = {
   height?: number;
 }
 
+const productColors = { increased: PALETTE.plotlyRed, decreased: PALETTE.plotlyGreen, neutral: '#999' };
+
 export function WaterfallYearly({
   data,
   indexKey,
@@ -29,18 +31,6 @@ export function WaterfallYearly({
   title,
   height = 420,
 }: Props) {
-
-  const productColors = useMemo(
-    () => {
-      const PALETTE = getPalette();
-      return {
-        increased: PALETTE.plotlyRed,
-        decreased: PALETTE.plotlyGreen,
-        neutral: '#999',
-      };
-    },
-    [],
-  );
 
   const series = data.series;
   const seriesData = useMemo(() => {
@@ -129,7 +119,7 @@ export function WaterfallYearly({
     const traceData = buildWaterfallTrace(xValues, yValues, measure, customdata, productColors);
 
     return { trace: traceData, topYearAnnotations: annotations };
-  }, [deltas, yearLabels, yearSet, keysUsed, seriesData, productColors]);
+  }, [deltas, yearLabels, yearSet, keysUsed, seriesData]);
 
   const notEnoughYears = yearSet.length < 2;
 

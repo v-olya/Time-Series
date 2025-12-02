@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import type { ProcessedData } from '../../lib/types';
 import { movePlotDown, plotMargin, plotTitle } from '../../lib/const';
-import { getPalette } from '../../lib/helpers';
+import { PALETTE } from '../../lib/generatedPalette';
 import { buildCustomRadarTraces } from '../../lib/plotlyUtils';
 
 import PlotlyWrapper from './PlotlyWrapper';
@@ -19,8 +19,6 @@ type Props = {
 };
 
 export function RadarYearly({ data, items, title, height = 520 }: Props) {
-  const PALETTE = useMemo(() => getPalette(), []);
-
   const years = useMemo(() => {
     const yearSet = new Set<number>();
     Object.values(data.series || {}).forEach((series) => {
@@ -34,10 +32,7 @@ export function RadarYearly({ data, items, title, height = 520 }: Props) {
     return Array.from(yearSet).sort((a, b) => a - b);
   }, [data.series]);
 
-  const traces = useMemo(() => {
-    const seriesMap = data.series || {};
-    return buildCustomRadarTraces(seriesMap, items, years, PALETTE);
-  }, [data.series, items, years, PALETTE]);
+  const traces = useMemo(() => buildCustomRadarTraces(data.series || {}, items, years, PALETTE), [data.series, items, years]);
 
   const flat = traces.flatMap((t) => (t.r as number[]) || []);
   const rMin = flat.length ? Math.min(...flat) : 0;

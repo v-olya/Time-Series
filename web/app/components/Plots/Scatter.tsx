@@ -6,6 +6,7 @@ import type { ProcessedData, TimePoint } from '../../lib/types';
 import { Select } from '../UI/Select';
 import { plotTitle, plotMargin, SEASONS_ORDER } from '../../lib/const';
 import { pearson, alignSeriesByDate, getSeasonColors, bucketBySeason } from '../../lib/helpers';
+import { PALETTE } from '../../lib/generatedPalette';
 import { buildSeasonScatterTraces } from '../../lib/plotlyUtils';
 
 import PlotlyWrapper from './PlotlyWrapper';
@@ -24,7 +25,7 @@ export function Scatter({ data, baseSeriesKey, productOptions, baseLabel, height
   const showPicker = productOptions.length > 2;
   const [product, setProduct] = useState<string>(productOptions[0].value);
 
-  const seasonColors = useMemo(() => getSeasonColors(), []);
+  const seasonColors = getSeasonColors(PALETTE);
 
   // Get two series to compare
   const [series1, series2] = useMemo(() => {

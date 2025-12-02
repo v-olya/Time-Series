@@ -2,7 +2,8 @@
 
 import { useMemo } from 'react';
 import type { ProcessedData } from '../lib/types';
-import { getPalette, mapColorsToPalette } from '../lib/helpers';
+import { mapColorsToPalette } from '../lib/helpers';
+import { PALETTE } from '../lib/generatedPalette';
 import { Funnel } from './Plots/Funnel';
 import { FLOUR_PRODUCT_SERIES_MAPPING, FLOUR_PRODUCT_LABELS, MILK_CHANNEL_FUNNEL_COLOR_KEYS } from '../lib/const';
 
@@ -11,7 +12,6 @@ type Props = { data: ProcessedData; height?: number };
 const CHANNEL_ORDER = ['wheat_z', 'flour_00_p', 'flour_s'];
 
 export function FlourFunnel({ data, height = 420 }: Props) {
-  const PALETTE = useMemo(() => getPalette(), []);
 
   const mapping = {
     wheat_z: FLOUR_PRODUCT_SERIES_MAPPING.wheat_z,

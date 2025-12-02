@@ -6,9 +6,10 @@ import { Select } from '../UI/Select';
 import { MultiSelect } from '../UI/MultiSelect';
 import { aggregationOptions, ML_TRAINING_MESSSAGES, plotLegend, plotMargin, plotTitle } from '../../lib/const';
 import { buildSeriesLineTrace, buildForecastTraces } from '../../lib/plotlyUtils';
-import { extractSeriesByMapping, getPalette } from '../../lib/helpers';
+import { extractSeriesByMapping } from '../../lib/helpers';
 import { aggregateSeries, AggregationMethod } from '../../lib/aggregator';
 import { useMLForecasts } from '../../lib/hooks/useMLForecasts';
+import { PALETTE } from '../../lib/generatedPalette';
 
 import PlotlyWrapper from './PlotlyWrapper';
 import type * as Plotly from 'plotly.js';
@@ -56,7 +57,6 @@ export function TimeSeries<T extends string>({
   const [confidenceLevel, setConfidenceLevel] = useState<ConfidenceLevel>('85');
 
   const seriesData = useMemo(() => extractSeriesByMapping(data.series, seriesMapping), [data.series, seriesMapping]);
-  const palette = useMemo(() => getPalette(), []);
 
   const productsToShow = useMemo(
     () => (enableProductSelection ? selectedProducts : productKeys),
@@ -117,7 +117,7 @@ export function TimeSeries<T extends string>({
         const fcTraces = buildForecastTraces(
           filteredFc,
           iv,
-          colors[productKey] || palette.plotlyBrown,
+          colors[productKey] || PALETTE.plotlyBrown,
           productLabels[productKey],
         );
         allTraces.push(...fcTraces);
@@ -149,7 +149,6 @@ export function TimeSeries<T extends string>({
     seriesMapping,
     observedDateKeys,
     confidenceLevel,
-    palette,
     mlForecasts,
   ]);
 

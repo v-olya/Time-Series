@@ -1,30 +1,5 @@
 import type { ProcessedData, TimePoint, Palette } from './types';
 
-export function getPalette(): Palette {
-  // Guard for SSR: `document` and `getComputedStyle` are only available in the browser.
-  if (typeof window === 'undefined' || typeof document === 'undefined' || typeof getComputedStyle === 'undefined') {
-    return {
-      plotlyBlue: '',
-      plotlyOrange: '',
-      plotlyGreen: '',
-      plotlyRed: '',
-      plotlyPurple: '',
-      plotlyBrown: '',
-      plotlyYellow: '',
-    };
-  }
-  const s = getComputedStyle(document.documentElement);
-  const read = (name: string) => s.getPropertyValue(name).trim() || '';
-  return {
-    plotlyBlue: read('--plotly-blue'),
-    plotlyOrange: read('--plotly-orange'),
-    plotlyGreen: read('--plotly-green'),
-    plotlyRed: read('--plotly-red'),
-    plotlyPurple: read('--plotly-purple'),
-    plotlyBrown: read('--plotly-brown'),
-    plotlyYellow: read('--plotly-yellow'),
-  } as Palette;
-}
 
 export function pearson(xs: number[], ys: number[]) {
   if (xs.length === 0 || ys.length === 0 || xs.length !== ys.length) return 0;
@@ -54,13 +29,12 @@ export  function monthToSeason(monthIndex: number) {
   return 'Autumn';
 }
 
-export function getSeasonColors(): Record<string, string> {
-  const p = getPalette();
+export function getSeasonColors(palette: Palette): Record<string, string> {
   return {
-    Winter: p.plotlyBlue,
-    Spring: p.plotlyGreen,
-    Summer: p.plotlyYellow,
-    Autumn: p.plotlyRed,
+    Winter: palette.plotlyBlue,
+    Spring: palette.plotlyGreen,
+    Summer: palette.plotlyYellow,
+    Autumn: palette.plotlyRed,
   } as Record<string, string>;
 }
 // Returns years array and z matrix (months x years). Used for heatmaps.

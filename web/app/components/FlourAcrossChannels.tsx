@@ -2,14 +2,14 @@
 
 import { useMemo } from 'react';
 import type { ProcessedData } from '../lib/types';
-import { getPalette, mapColorsToPalette } from '../lib/helpers';
+import { mapColorsToPalette } from '../lib/helpers';
+import { PALETTE } from '../lib/generatedPalette';
 import { TimeSeries } from './Plots/TimeSeries';
 import { FLOUR_PRODUCT_SERIES_MAPPING, FLOUR_PRODUCT_CHANNELS, FLOUR_PRODUCT_COLOR_KEYS } from '../lib/const';
 
 type Props = { data: ProcessedData; height?: number };
 
 export function FlourAcrossChannels({ data, height = 520 }: Props) {
-  const PALETTE = useMemo(() => getPalette(), []);
 
   const productColors = mapColorsToPalette(FLOUR_PRODUCT_COLOR_KEYS, PALETTE);
 

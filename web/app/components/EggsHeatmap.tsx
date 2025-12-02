@@ -1,6 +1,5 @@
 'use client';
 
-import { useMemo } from 'react';
 import type { ProcessedData } from '../lib/types';
 import { EGG_PRODUCT_SERIES_MAPPING, EGG_PRODUCT_LABELS, type EggProductKey, HEATMAP_TITLE } from '../lib/const';
 import { Heatmap } from './Plots/Heatmap';
@@ -8,10 +7,10 @@ import { Heatmap } from './Plots/Heatmap';
 type Props = { data: ProcessedData; height?: number };
 
 export function EggsHeatmap({ data, height = 520 }: Props) {
-  const productOptions = useMemo(() => {
-    const keys = Object.keys(EGG_PRODUCT_SERIES_MAPPING) as EggProductKey[];
-    return [{ value: 'eggsIndex', label: 'Eggs index' }, ...keys.map((k) => ({ value: k, label: EGG_PRODUCT_LABELS[k] || String(k) }))];
-  }, []);
+  const productOptions = [
+    { value: 'eggsIndex', label: 'Eggs index' },
+    ...(Object.keys(EGG_PRODUCT_SERIES_MAPPING) as EggProductKey[]).map((k) => ({ value: k, label: EGG_PRODUCT_LABELS[k] || String(k) })),
+  ];
 
   return (
     <Heatmap

@@ -1,8 +1,8 @@
 'use client';
 
-import { useMemo } from 'react';
 import type { ProcessedData } from '../lib/types';
-import { getPalette, mapColorsToPalette } from '../lib/helpers';
+import { mapColorsToPalette } from '../lib/helpers';
+import { PALETTE } from '../lib/generatedPalette';
 import { DAIRY_PRODUCT_COLOR_KEYS } from '../lib/const';
 import { TimeSeries } from './Plots/TimeSeries';
 
@@ -25,8 +25,6 @@ const PRODUCT_SERIES_MAPPING: Record<ProductKey, string> = {
 };
 
 export function DairyAcrossChannels({ data, height = 600 }: Props) {
-  const PALETTE = useMemo(() => getPalette(), []);
-
   const productColors = mapColorsToPalette(DAIRY_PRODUCT_COLOR_KEYS, PALETTE);
 
   return (

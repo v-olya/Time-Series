@@ -2,7 +2,8 @@
 
 import { useMemo } from 'react';
 import type { ProcessedData, MilkChannelsKey } from '../lib/types';
-import { getPalette, mapColorsToPalette } from '../lib/helpers';
+import { mapColorsToPalette } from '../lib/helpers';
+import { PALETTE } from '../lib/generatedPalette';
 import { TimeSeries } from './Plots/TimeSeries';
 import { MILK_ONLY_KEYS, MILK_CHANNEL_COLOR_KEYS } from '../lib/const';
 
@@ -15,8 +16,7 @@ const CHANNEL_LABELS: Record<MilkChannelsKey, string> = {
 };
 
 export function MilkOnlyAcrossChannels({ data, height = 500 }: Props) {
-  const PALETTE = useMemo(() => getPalette(), []);
-
+  
   const productColors = mapColorsToPalette(MILK_CHANNEL_COLOR_KEYS, PALETTE);
 
   return (
