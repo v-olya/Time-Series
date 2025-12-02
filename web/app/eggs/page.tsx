@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import type { ProcessedData } from '../lib/types';
-import { mergeForecastsIntoData } from '../lib/loadForecasts';
+import { mergeForecastsIntoData } from '../lib/loadPrecomputedForecasts';
 import { EggsAcrossChannels } from '../components/EggsAcrossChannels';
 import { EggsScatter } from '../components/EggsScatter';
 import { EggsRadar } from '../components/EggsRadar';

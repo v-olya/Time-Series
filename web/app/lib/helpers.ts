@@ -213,3 +213,24 @@ export function bucketBySeason(
   }
   return buckets as Record<string, { x: number[]; y: number[]; text: string[] }>;
 }
+
+export function addMonths(dateStr: string, months: number): string {
+  const date = new Date(dateStr);
+  date.setMonth(date.getMonth() + months);
+  return date.toISOString().split('T')[0];
+}
+
+// Normalizes data to [0, 1] range
+export function normalize(data: number[]) {
+  const min = Math.min(...data);
+  const max = Math.max(...data);
+  const range = max - min || 1; // Avoid division by 0
+  
+  return {
+    normalized: data.map((v) => (v - min) / range), min, max, range,
+  };
+}
+
+export function denormalize(val: number, min: number, range: number) {
+  return val * range + min;
+}

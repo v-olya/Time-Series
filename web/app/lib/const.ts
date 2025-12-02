@@ -165,3 +165,11 @@ export const WATERFALL_COLOR_KEYS = {
 } as const;
 
 export const HEATMAP_TITLE = 'Seasonal Heat Map of Retail Prices and the Aggregate Index';
+
+export enum ML_TRAINING_MESSSAGES {
+  BUTTON_TOOLTIP = `Train a simple neural network in your browser.
+              SARIMAX (dashed lines) uses statistical methods optimized for seasonal data.
+              ML uses a dense neural network that may capture different patterns.
+              Compare both to cross-validate.`,
+  NOT_ENOUGH_DATA = 'Not enough data to train ML model',
+}

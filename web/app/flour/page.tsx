@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import type { ProcessedData } from '../lib/types';
-import { mergeForecastsIntoData } from '../lib/loadForecasts';
+import { mergeForecastsIntoData } from '../lib/loadPrecomputedForecasts';
 import { FlourAcrossChannels } from '../components/FlourAcrossChannels';
 import { FlourScatter } from '../components/FlourScatter';
 import { FlourRadar } from '../components/FlourRadar';
