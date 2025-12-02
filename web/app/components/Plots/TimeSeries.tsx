@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import type { ProcessedData } from '../../lib/types';
 import { Select } from '../UI/Select';
 import { MultiSelect } from '../UI/MultiSelect';
-import { aggregationOptions, plotLegend, plotMargin, plotTitle } from '../../lib/const';
+import { aggregationOptions, ML_TRAINING_MESSSAGES, plotLegend, plotMargin, plotTitle } from '../../lib/const';
 import { buildSeriesLineTrace, buildForecastTraces } from '../../lib/plotlyUtils';
 import { extractSeriesByMapping, getPalette } from '../../lib/helpers';
 import { aggregateSeries, AggregationMethod } from '../../lib/aggregator';
@@ -111,6 +111,17 @@ export function TimeSeries<T extends string>({
     defaultSelectedProducts || (enableProductSelection ? productKeys.slice(0, 2) : productKeys),
   );
   const [confidenceLevel, setConfidenceLevel] = useState<ConfidenceLevel>('85');
+  
+  const [mlForecasts, setMlForecasts] = useState<Record<string, { date: string; value: number }[]>>({});
+  const [isTraining, setIsTraining] = useState(false);
+  const [trainingStatus, setTrainingStatus] = useState('');
+
+  const abortRef = useRef(false);
+  useEffect(() => {
+    return () => {
+      abortRef.current = true;
+    };
+  }, []);
 
   const seriesData = useMemo(() => extractSeriesByMapping(data.series, seriesMapping), [data.series, seriesMapping]);
 
@@ -137,14 +148,73 @@ export function TimeSeries<T extends string>({
 
   const observedDateKeys = useObservedDateKeys(aggregatedSeries);
 
+  const handleTrain = useCallback(async () => {
+    if (!seriesData) return;
+    abortRef.current = false;
+    setIsTraining(true);
+    const newForecasts: Record<string, { date: string; value: number }[]> = {};
+
+    try {
+      // import TensorFlow module only when the user requests training
+      setTrainingStatus('Loading TensorFlow...');
+      const { trainAndPredict } = await import('../../lib/inBrowserForecasts');
+      
+      if (abortRef.current) return;
+
+      for (const productKey of productsToShow) {
+        if (abortRef.current) return;
+        setTrainingStatus(`Training ${productLabels[productKey]}...`);
+        const rawSeries = seriesData[productKey];
+        if (rawSeries && rawSeries.length > 0) {
+          const prediction = await trainAndPredict(rawSeries, (epoch, loss) => {
+            if (abortRef.current) return;
+            // Update status every 5 epochs to reduce render thrashing
+            if (epoch % 5 === 0) {
+              setTrainingStatus(`Training ${productLabels[productKey]}... (Loss: ${loss.toFixed(4)})`);
+            }
+          });
+          if (abortRef.current) return;
+          newForecasts[productKey] = prediction;
+        }
+      }
+      if (!abortRef.current) {
+        setMlForecasts((prev) => ({ ...prev, ...newForecasts }));
+      }
+    } catch (e) {
+      console.error('Training failed', e);
+    } finally {
+      if (!abortRef.current) {
+        setIsTraining(false);
+        setTrainingStatus('');
+      }
+    }
+  }, [seriesData, productsToShow, productLabels]);
+
+  const mlTraces = useMemo(() => {
+    const traces: Plotly.Data[] = [];
+    for (const productKey of productsToShow) {
+      const fc = mlForecasts[productKey];
+      if (!fc) continue;
+
+      // Aggregate the forecast to merge into the current view
+      const points = aggregateSeries(fc, aggregationMethod) || [];
+      
+      traces.push(
+        buildSeriesLineTrace(points, `Tensorflow (${productLabels[productKey]})`, colors[productKey], 6, 3, 'dot', 'lines',
+        ),
+      );
+    }
+    return traces;
+  }, [mlForecasts, productsToShow, aggregationMethod, colors, productLabels]);
+
   const traces = useMemo(() => {
-    if (!seriesData) return [];
+    if (!aggregatedSeries.size) return [];
 
     return productsToShow.map((productKey) => {
       const points = aggregatedSeries.get(productKey) || [];
       return buildSeriesLineTrace(points, productLabels[productKey], colors[productKey], 6, 2);
     });
-  }, [seriesData, productsToShow, aggregatedSeries, colors, productLabels]);
+  }, [productsToShow, aggregatedSeries, colors, productLabels]);
 
   const forecastTrace = useMemo((): Plotly.Data[] | null => {
     // Show forecasts only for raw (monthly) view
@@ -216,10 +286,23 @@ export function TimeSeries<T extends string>({
             onChange={(value) => setAggregationMethod(value as AggregationMethod)}
             options={aggregationOptions}
           />
+          <button
+            onClick={handleTrain}
+            disabled={isTraining}
+            className="badge badge-primary badge-button"
+            title={ML_TRAINING_MESSSAGES.BUTTON_TOOLTIP}
+            aria-label="Train ML Model"
+          >
+            <>
+              <img src="/neural.svg" alt="" className="train-icon" />
+              {isTraining ? trainingStatus || 'Training...' : 'Train the model'}
+            </>
+          
+          </button>
         </div>
 
         <PlotlyWrapper
-          data={forecastTrace ? [...traces, ...forecastTrace] : traces}
+          data={[...traces, ...(forecastTrace || []), ...mlTraces]}
           layout={{
             height,
             title: { text: title, font: plotTitle },
