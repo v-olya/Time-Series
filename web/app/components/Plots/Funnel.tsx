@@ -54,7 +54,7 @@ export function Funnel({ data, mapping, channelOrder, labels, colors, titleHTML,
   const showEmptyState = !seriesData || yearSet.length === 0;
 
   return (
-    <div className="card">
+    <div className="card" style={{ height }}>
       <div className="plot-controls">
         <Select
           id="funnel-year"

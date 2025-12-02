@@ -100,7 +100,7 @@ export function TimeSeries<T extends string>({
       }
     }
 
-    // 2. Forecast Traces (only for raw aggregation)
+    // 2. Static Forecast Traces
     if (showForecast && seriesData && data.forecasts && aggregationMethod === 'raw') {
       for (const productKey of productsToShow) {
         const seriesKey = seriesMapping[productKey];
@@ -124,7 +124,7 @@ export function TimeSeries<T extends string>({
       }
     }
 
-    // 3. ML Forecast Traces
+    // 3. In-browser Forecast Traces
     for (const productKey of productsToShow) {
       const fc = mlForecasts[productKey];
       if (!fc) continue;
@@ -153,7 +153,13 @@ export function TimeSeries<T extends string>({
   ]);
 
   if (!seriesData) {
-    return <div className="empty-state">No data available</div>;
+    return (
+      <div className="group">
+        <div className="card plot-container" style={{ height }}>
+          <div className="empty-state" />
+        </div>
+      </div>
+    );
   }
 
   const productOptions: ProductOption[] = productKeys.map((key) => ({
@@ -163,7 +169,7 @@ export function TimeSeries<T extends string>({
 
   return (
     <div className="group">
-      <div className="card plot-container">
+      <div className="card plot-container" style={{ height }}>
         <div className="plot-controls">
           <Select
             id="confidence"

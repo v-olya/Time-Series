@@ -124,7 +124,7 @@ export function WaterfallYearly({
   const notEnoughYears = yearSet.length < 2;
 
   return (
-    <div className="card">
+    <div className="card" style={{ height }}>
       <div className="plot-controls">
         <Select
           id="waterfall-product"

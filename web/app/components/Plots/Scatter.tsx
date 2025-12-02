@@ -85,7 +85,7 @@ export function Scatter({ data, baseSeriesKey, productOptions, baseLabel, height
   const yPad = (yMax - yMin) * 0.08 || 1;
 
   return (
-    <div className="card pos-relative">
+    <div className="card pos-relative" style={{ height }}>
       {showPicker && (
         <span className="pos-absolute overlay right-corner">
           <Select

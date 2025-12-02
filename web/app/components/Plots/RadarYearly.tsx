@@ -39,7 +39,7 @@ export function RadarYearly({ data, items, title, height = 520 }: Props) {
   const rMax = flat.length ? Math.max(...flat) : 1;
 
   return (
-    <div className="card">
+    <div className="card" style={{ height }}>
       <PlotlyWrapper
         data={traces}
         layout={{
