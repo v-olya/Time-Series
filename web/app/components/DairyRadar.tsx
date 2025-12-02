@@ -1,10 +1,8 @@
 'use client';
-import type { ProcessedData } from '../lib/types';
-import { productKeyToSeriesKey, ALL_DAIRY_LABELS } from 'app/lib/const';
-import { PALETTE } from 'app/lib/generatedPalette';
-import type { Palette } from 'app/lib/types';
+import type { ProcessedData, Palette } from '../lib/types';
+import { productKeyToSeriesKey, ALL_DAIRY_LABELS, DAIRY_RADAR_KEYS, DAIRY_RADAR_COLOR_KEYS } from '../lib/const';
+import { PALETTE } from '../lib/generatedPalette';
 import { RadarYearly, type RadarItem } from './Plots/RadarYearly';
-import { DAIRY_RADAR_KEYS, DAIRY_RADAR_COLOR_KEYS } from 'app/lib/const';
 
 type Props = { data: ProcessedData; height: number };
 

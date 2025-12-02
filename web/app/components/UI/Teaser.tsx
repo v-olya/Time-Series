@@ -1,10 +1,9 @@
 'use client';
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
 import PlotlyWrapper from '../Plots/PlotlyWrapper';
 import styles from './Teaser.module.css';
 import type { ProcessedData, TimePoint } from '../../lib/types';
-import { scatterTrace } from 'app/lib/plotlyUtils';
+import { scatterTrace } from '../../lib/plotlyUtils';
 
 type Props = {
   title: string;

@@ -1,7 +1,7 @@
 'use client';
 
 import type { ProcessedData } from '../lib/types';
-import { DAIRY_RETAIL_KEYS, DAIRY_RETAIL_OPTIONS, HEATMAP_TITLE } from 'app/lib/const';
+import { DAIRY_RETAIL_KEYS, DAIRY_RETAIL_OPTIONS, HEATMAP_TITLE } from '../lib/const';
 import { Heatmap } from './Plots/Heatmap';
 
 type Props = { data: ProcessedData; height?: number };
