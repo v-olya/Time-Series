@@ -1,38 +1,50 @@
-# Time series visualizations
+# Time series
 
-The App for real-life data analysis and forecasting (SARIMAX model is chosen separately for each data column based on the lowest AIC). 
+Exploratory visualizations and simple forecasts over real price time series. Source data: National Open Data Catalogue, full dataset <a href="https://data.gov.cz/dataset?iri=https%3A%2F%2Fdata.gov.cz%2Fzdroj%2Fdatov%C3%A9-sady%2F00025593%2F02f3decfbfdabecebd4c0548f55390a0">here</a>.
 
-See `web/` for Front End and `_preprocess/` for python preprocessing scripts.
+- **Preprocessing:** per-series SARIMAX (picked by lowest AIC), run offline in `_preprocess/`.
+- **Client-side ML:** a compact dense network in `web/app/lib/inBrowserForecasts.ts` using `@tensorflow/tfjs` (short windows, auto-regressive predictions in browser).
 
-## About
-This repository demonstrates visualizations for a set of time series that come from National Open Data Catalogue;  you can download the full dataset from <a href="https://data.gov.cz/dataset?iri=https%3A%2F%2Fdata.gov.cz%2Fzdroj%2Fdatov%C3%A9-sady%2F00025593%2F02f3decfbfdabecebd4c0548f55390a0">data.gov.cz</a>.
+## Structure
 
-The `_preprocess/` scripts transform raw CSV exports into cleaned and aggregated data, and the `web/` Next.js app contains interactive Plotly visualizations that use the processed outputs.
+- `_preprocess/` – raw CSVs (`CEN02.csv`, per-product time series) and Python scripts for splitting, aggregation and export (see `_preprocess/README.md`).
+- `web/` – Next.js app with Plotly-based EDA (time series, scatter, radar, 2D and 3D heatmaps, waterfall, funnel) and optional in-browser ML.
+- `web/public/data/` – processed CSV/JSON artifacts consumed by the frontend.
 
-## Data provenance
+## From `web/`
 
-- **Raw inputs:** the raw files are stored in `_preprocess/` (notably `CEN02.csv` and the per-product time-series CSVs under `_preprocess/dairy`, `_preprocess/eggs`, and `_preprocess/flour`).
-- **Preprocessing:** scripts such as `_preprocess/split_data.py`, `_preprocess/aggregate.py`, and `_preprocess/export_processed_json.py` are used to clean, split, and export the processed datasets.
-- **Processed outputs:** the frontend consumes merged CSVs and JSON files under `web/public/data/` (for example, `web/public/data/merged_dairy_prices.csv` and `web/public/data/processed/*.json`).
+- `npm install`
+- `npm run dev`
+- `npm run build`
+- `npm run start`
+- `npm run lint` / `npm run lint:fix`
+- `npm run generate:palette`
 
-If you need a reproducible run, execute the preprocessing scripts in `_preprocess/` (see `_preprocess/README.md`) to regenerate the `web/public/data/` artifacts.
+## Data lifecycle
 
-## Frontend notes — Plotly cleanup model
+- **Raw inputs:** `_preprocess/CEN02.csv` and per-category CSVs under `_preprocess/dairy`, etc.
+- **Processing:** run the Python scripts in `_preprocess/` to regenerate the artifacts under `web/public/data/`.
+- **Forecasting:** SARIMAX runs in preprocessing; TensorFlow forecasts run in-browser on the currently selected series.
 
-The app uses a page-level cleanup model to avoid heavy Plotly rendering blocking navigation. 
-Each Plotly graph registers its DOM node with `lib/plotlyManager.ts` (the easiest way is to use `components/Plots/PlotlyWrapper.tsx`, which registers on initialization and unregisters on unmount). 
+## Plotly lifecycle
 
-A global client component, `components/Plots/PlotlyPurger.tsx`, is mounted in `app/layout.tsx` and listens for navigation events (capture-phase link clicks, `popstate`, and `beforeunload`). When navigation starts it calls `purgeAllPlotly()` which invokes `Plotly.purge()` for all registered graph nodes (with a DOM fallback) to abort rendering and free resources.
+Plotly graphs register their DOM nodes via `web/app/lib/plotlyManager.ts` (typically through `web/app/components/Plots/PlotlyWrapper.tsx`).
 
-**If you use programmatic navigation** (e.g. `router.push(...)`), call `purgeAllPlotly()` before navigating. Alternatively, register graph divs directly using the `onInitialized` handler on `react-plotly.js` and the `registerGraphDiv`/`unregisterGraphDiv` helpers.
+`web/app/components/Plots/PlotlyPurger.tsx`, mounted in `web/app/layout.tsx`, listens for navigation and calls `purgeAllPlotly()` to abort rendering and free resources. When navigating programmatically (e.g. `router.push`), call `purgeAllPlotly()` first or wire `registerGraphDiv`/`unregisterGraphDiv` directly in your Plotly components.
+
+## Extending the app
+
+- **New product category:** add raw CSV(s) under `_preprocess/<category>/`, update the preprocessing script so it exports merged artifacts into `web/public/data/`, then create a route in `web/app/<category>/page.tsx` with Plotly components wired to the new data.
+- **New chart type:** add a reusable Plotly wrapper under `web/app/components/Plots/` and embed it in the relevant category page; register graph divs via `PlotlyWrapper` or `registerGraphDiv` / `unregisterGraphDiv` so `PlotlyPurger` can clean them up.
 
 ## Screenshots
 
-A simple home page with an overview of existing data entities:
+Home overview:
 
 ![Screenshot_30-11-2025_23638_localhost](https://github.com/user-attachments/assets/2589f549-ccc0-4de0-b407-16021ed8194b)
 
-Category EDA with Plotly: TimeSeries, Scatter and Radar plots, 2D and 3D Heatmaps, Waterfall and Funnel charts.
+Category EDA:
 
-![Screenshot_1-12-2025_225533_localhost](https://github.com/user-attachments/assets/fab59e50-7e7b-48a1-bb2b-c44027b52477)
+![Screenshot_2-12-2025_6139_localhost](https://github.com/user-attachments/assets/573db599-ccdf-4107-b3f9-93ee8ba3cb39)
+
 
