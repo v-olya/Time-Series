@@ -16,7 +16,7 @@ export default async function FlourPage() {
       <FlourAcrossChannels data={data} height={600} />
 
       <LazyPlot height={480}>
-        <div className="plot-container two-plots">
+        <div className="plot-wrapper two-plots">
           <div className="inner-large">
             <FlourScatter data={data} height={480} />
           </div>
@@ -31,7 +31,7 @@ export default async function FlourPage() {
       </LazyPlot>
 
       <LazyPlot height={480}>
-        <div className="plot-container two-plots">
+        <div className="plot-wrapper two-plots">
           <div className="inner-large">
             <FlourWaterfall data={data} height={480} />
           </div>

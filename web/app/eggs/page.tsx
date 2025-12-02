@@ -14,7 +14,7 @@ export default async function EggsPage() {
       <EggsAcrossChannels data={data} height={600} />
 
       <LazyPlot height={480}>
-        <div className="plot-container two-plots">
+        <div className="plot-wrapper two-plots">
           <div className="inner-large">
             <EggsScatter data={data} height={480} />
           </div>
@@ -29,7 +29,7 @@ export default async function EggsPage() {
       </LazyPlot>
 
       <LazyPlot height={480}>
-        <div className="plot-container single-plot">
+        <div className="plot-wrapper single-plot">
           <EggsWaterfall data={data} height={480} />
         </div>
       </LazyPlot>

@@ -163,7 +163,7 @@ export function TimeSeries<T extends string>({
 
   return (
     <div className="group">
-      <div className="card plot-container">
+      <div className="card plot-wrapper">
         <div className="plot-controls">
           <Select
             id="confidence"

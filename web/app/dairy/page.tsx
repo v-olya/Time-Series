@@ -17,7 +17,7 @@ export default async function DairyPage() {
       <MilkOnlyAcrossChannels data={data} height={600} />
 
       <LazyPlot height={480}>
-        <div className="plot-container two-plots">
+        <div className="plot-wrapper two-plots">
           <div className="inner-large">
             <DairyScatter data={data} height={480} />
           </div>
@@ -36,7 +36,7 @@ export default async function DairyPage() {
       </LazyPlot>
 
       <LazyPlot height={480}>
-        <div className="plot-container two-plots">
+        <div className="plot-wrapper two-plots">
           <div className="inner-large">
             <DairyWaterfall data={data} height={480} />
           </div>
