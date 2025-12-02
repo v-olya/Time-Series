@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import type { ProcessedData } from '../lib/types';
 import { mergeForecastsIntoData } from '../lib/loadPrecomputedForecasts';
+import { LazyPlot } from '../components/Plots/LazyPlot';
 import { FlourAcrossChannels } from '../components/FlourAcrossChannels';
 import { FlourScatter } from '../components/FlourScatter';
 import { FlourRadar } from '../components/FlourRadar';
@@ -17,27 +18,34 @@ export default function FlourPage() {
 
   return (
     <>
+      {/* First plot loads immediately for fast FCP */}
       <FlourAcrossChannels data={data} height={600} />
 
-      <div className="plot-container two-plots">
-        <div className="inner-large">
-          <FlourScatter data={data} height={480} />
+      <LazyPlot height={480}>
+        <div className="plot-container two-plots">
+          <div className="inner-large">
+            <FlourScatter data={data} height={480} />
+          </div>
+          <div className="inner-small">
+            <FlourRadar data={data} height={480} />
+          </div>
         </div>
-        <div className="inner-small">
-          <FlourRadar data={data} height={480} />
-        </div>
-      </div>
+      </LazyPlot>
 
-      <FlourHeatmap data={data} height={700} />
+      <LazyPlot height={700}>
+        <FlourHeatmap data={data} height={700} />
+      </LazyPlot>
 
-      <div className="plot-container two-plots">
-        <div className="inner-large">
-          <FlourWaterfall data={data} height={480} />
+      <LazyPlot height={480}>
+        <div className="plot-container two-plots">
+          <div className="inner-large">
+            <FlourWaterfall data={data} height={480} />
+          </div>
+          <div className="inner-small">
+            <FlourFunnel data={data} height={480} />
+          </div>
         </div>
-        <div className="inner-small">
-          <FlourFunnel data={data} height={480} />
-        </div>
-      </div>
+      </LazyPlot>
     </>
   );
 }

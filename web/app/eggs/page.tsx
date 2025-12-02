@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import type { ProcessedData } from '../lib/types';
 import { mergeForecastsIntoData } from '../lib/loadPrecomputedForecasts';
+import { LazyPlot } from '../components/Plots/LazyPlot';
 import { EggsAcrossChannels } from '../components/EggsAcrossChannels';
 import { EggsScatter } from '../components/EggsScatter';
 import { EggsRadar } from '../components/EggsRadar';
@@ -18,22 +19,29 @@ export default function EggsPage() {
 
   return (
     <>
+      {/* First plot loads immediately for fast FCP */}
       <EggsAcrossChannels data={data} height={600} />
 
-      <div className="plot-container two-plots">
-        <div className="inner-large">
-          <EggsScatter data={data} height={480} />
+      <LazyPlot height={480}>
+        <div className="plot-container two-plots">
+          <div className="inner-large">
+            <EggsScatter data={data} height={480} />
+          </div>
+          <div className="inner-small">
+            <EggsRadar data={data} height={480} />
+          </div>
         </div>
-        <div className="inner-small">
-          <EggsRadar data={data} height={480} />
+      </LazyPlot>
+
+      <LazyPlot height={700}>
+        <EggsHeatmap data={data} height={700} />
+      </LazyPlot>
+
+      <LazyPlot height={480}>
+        <div className="plot-container single-plot">
+          <EggsWaterfall data={data} height={480} />
         </div>
-      </div>
-
-      <EggsHeatmap data={data} height={700} />
-
-      <div className="plot-container single-plot">
-        <EggsWaterfall data={data} height={480} />
-      </div>
+      </LazyPlot>
     </>
   );
 }
