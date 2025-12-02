@@ -1,5 +1,6 @@
 import {Teaser} from './Teaser';
 import type { ProcessedData } from '../../lib/types';
+import { LazyPlot } from '../Plots/LazyPlot';
 
 type TeaserItem = {
   title: string;
@@ -22,15 +23,16 @@ export function TeaserGroup({ heading, teasers, fallback }: Props) {
       <div className="cards-grid">
         {hasIndex ? (
           teasers.map((t, i) => (
-            <Teaser
-              key={i}
-              title={t.title}
-              href={t.href}
-              series={
-                t.series || ({ timeSeries: [], meta: { series: '', category: heading.toLowerCase() } } as ProcessedData)
-              }
-              showFullAnalysis={i === 0}
-            />
+            <LazyPlot key={`${t.series?.meta?.series}-${i}`}>
+              <Teaser
+                title={t.title}
+                href={t.href}
+                series={
+                  t.series || ({ timeSeries: [], meta: { series: '', category: heading.toLowerCase() } } as ProcessedData)
+                }
+                showFullAnalysis={i === 0}
+              />
+            </LazyPlot>
           ))
         ) : (
           <div>{fallback ?? `No ${heading.toLowerCase()} data available`}</div>

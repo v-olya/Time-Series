@@ -10,7 +10,7 @@ type Props = {
 };
 
 // Lazy-loads plot components only when they scroll into view.
-export function LazyPlot({ children, height = 600, rootMargin = '500px' }: Props) {
+export function LazyPlot({ children, height = 200, rootMargin = '500px' }: Props) {
   const [isVisible, setIsVisible] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
