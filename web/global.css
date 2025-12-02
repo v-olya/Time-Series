@@ -82,7 +82,7 @@ h4 {
   color: var(--on-primary);
 }
 
-.badge-secondary {
+.badge-secondary, .badge.badge-button.badge-secondary {
   background: var(--white);
   color: var(--plotly-blue);
   border: 2px solid var(--plotly-blue);
@@ -174,7 +174,7 @@ h4 {
 }
 
 .plot-controls {
-  z-index: 90; /* lower than Plotly modebar so modebar stays on top */
+  z-index: 90; /* lower than Plotly modebar */
 }
 
 .overlay,
@@ -182,7 +182,6 @@ h4 {
   z-index: 999;
 }
 
-/* icon inside badge buttons (used by Train) */
 .train-icon {
   display: inline-block;
   width: 18px;
@@ -369,9 +368,13 @@ select {
   background: var(--plotly-blue);
 }
 
-.app-nav a.nav-icon.active img, 
+.app-nav a.nav-icon.active img,
 .train-icon {
   filter: brightness(0) invert(1);
+}
+
+.badge.badge-button.badge-secondary .train-icon {
+  filter: none;
 }
 
 .pos-relative {
