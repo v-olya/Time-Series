@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "npm run lint && next build",
+    "dev": "npm run generate:palette && next dev",
+    "build": "npm run generate:palette && npm run lint:fix && next build",
     "start": "next start",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
-    "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix",
-    "format": "eslint . --ext .ts,.tsx,.js,.jsx --fix --fix-type layout"
+    "lint:fix": "eslint --fix",
+    "generate:palette": "node ./scripts/extract-palette.js"
   },
   "dependencies": {
     "@tensorflow/tfjs": "^4.22.0",
