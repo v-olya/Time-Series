@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import type { ProcessedData } from '../../lib/types';
 import { Select } from '../UI/Select';
 import { MultiSelect } from '../UI/MultiSelect';
@@ -8,6 +8,7 @@ import { aggregationOptions, ML_TRAINING_MESSSAGES, plotLegend, plotMargin, plot
 import { buildSeriesLineTrace, buildForecastTraces } from '../../lib/plotlyUtils';
 import { extractSeriesByMapping, getPalette } from '../../lib/helpers';
 import { aggregateSeries, AggregationMethod } from '../../lib/aggregator';
+import { useMLForecasts } from '../../lib/hooks/useMLForecasts';
 
 import PlotlyWrapper from './PlotlyWrapper';
 import type * as Plotly from 'plotly.js';
@@ -20,64 +21,6 @@ const confidenceOptions: { value: ConfidenceLevel; label: string }[] = [
   { value: '85', label: '85%' },
   { value: '95', label: '95%' },
 ];
-
-function getProductsToShow<T extends string>(
-  allProductKeys: T[],
-  selectedProducts: T[],
-  enableProductSelection: boolean,
-): T[] {
-  return enableProductSelection ? selectedProducts : allProductKeys;
-}
-
-function useObservedDateKeys<T extends string>(
-  aggregatedSeries: Map<T, { date: string; value: number }[]>,
-) {
-  return useMemo(() => {
-    const map = new Map<T, Set<string>>();
-    for (const [productKey, points] of aggregatedSeries.entries()) {
-      map.set(productKey, new Set(points.map((p) => p.date)));
-    }
-    return map;
-  }, [aggregatedSeries]);
-}
-
-function buildForecastData<T extends string>(
-  productsToShow: T[],
-  seriesMapping: Record<T, string>,
-  forecasts: ProcessedData['forecasts'],
-  forecastIntervals: ProcessedData['forecastIntervals'],
-  observedDateKeys: Map<T, Set<string>>,
-  aggregationMethod: AggregationMethod,
-  colors: Record<T, string>,
-  palette: ReturnType<typeof getPalette>,
-  productLabels: Record<T, string>,
-  confidenceLevel: ConfidenceLevel,
-): Plotly.Data[] {
-  if (!forecasts) return [];
-
-  const all: Plotly.Data[] = [];
-  for (const productKey of productsToShow) {
-    const seriesKey = seriesMapping[productKey];
-    const fc = forecasts?.[seriesKey];
-    if (!fc || fc.length === 0) continue;
-
-    const aggregatedFc = aggregateSeries(fc, aggregationMethod) || [];
-    const observedDates = observedDateKeys.get(productKey) || new Set<string>();
-    const filteredFc = aggregatedFc.filter((p) => !observedDates.has(p.date));
-    if (filteredFc.length === 0) continue;
-
-    const iv = forecastIntervals?.[seriesKey]?.[confidenceLevel];
-    const traces = buildForecastTraces(
-      filteredFc,
-      iv,
-      colors[productKey] || palette.plotlyBrown,
-      productLabels[productKey],
-    );
-    all.push(...traces);
-  }
-
-  return all;
-}
 
 type Props<T extends string> = {
   data: ProcessedData;
@@ -111,142 +54,103 @@ export function TimeSeries<T extends string>({
     defaultSelectedProducts || (enableProductSelection ? productKeys.slice(0, 2) : productKeys),
   );
   const [confidenceLevel, setConfidenceLevel] = useState<ConfidenceLevel>('85');
-  
-  const [mlForecasts, setMlForecasts] = useState<Record<string, { date: string; value: number }[]>>({});
-  const [isTraining, setIsTraining] = useState(false);
-  const [trainingStatus, setTrainingStatus] = useState('');
-
-  const abortRef = useRef(false);
-  useEffect(() => {
-    return () => {
-      abortRef.current = true;
-    };
-  }, []);
 
   const seriesData = useMemo(() => extractSeriesByMapping(data.series, seriesMapping), [data.series, seriesMapping]);
-
   const palette = useMemo(() => getPalette(), []);
-  const forecasts = data.forecasts;
-  const forecastIntervals = data.forecastIntervals;
 
   const productsToShow = useMemo(
-    () => getProductsToShow(productKeys, selectedProducts, enableProductSelection),
+    () => (enableProductSelection ? selectedProducts : productKeys),
     [productKeys, selectedProducts, enableProductSelection],
   );
 
+  const { mlForecasts, isTraining, trainingStatus, startTraining, clearForecasts, hasMlForecasts } = useMLForecasts(
+    seriesData,
+    productsToShow,
+    productLabels,
+  );
+
   const aggregatedSeries = useMemo(() => {
-    const map = new Map<typeof productKeys[number], { date: string; value: number }[]>();
+    const map = new Map<T, { date: string; value: number }[]>();
     if (!seriesData) return map;
 
     for (const productKey of productsToShow) {
       const points = aggregateSeries(seriesData[productKey], aggregationMethod) || [];
       map.set(productKey, points);
     }
-
     return map;
   }, [seriesData, productsToShow, aggregationMethod]);
 
-  const observedDateKeys = useObservedDateKeys(aggregatedSeries);
+  // Calculate observed dates to filter forecasts that overlap with actual data
+  const observedDateKeys = useMemo(() => {
+    const map = new Map<T, Set<string>>();
+    for (const [productKey, points] of aggregatedSeries.entries()) {
+      map.set(productKey, new Set(points.map((p) => p.date)));
+    }
+    return map;
+  }, [aggregatedSeries]);
 
-  const handleTrain = useCallback(async () => {
-    if (!seriesData) return;
-    abortRef.current = false;
-    setIsTraining(true);
-    const newForecasts: Record<string, { date: string; value: number }[]> = {};
+  const traces = useMemo(() => {
+    const allTraces: Plotly.Data[] = [];
 
-    try {
-      // import TensorFlow module only when the user requests training
-      setTrainingStatus('Loading TensorFlow...');
-      const { trainAndPredict } = await import('../../lib/inBrowserForecasts');
-      
-      if (abortRef.current) return;
-
-      for (const productKey of productsToShow) {
-        if (abortRef.current) return;
-        setTrainingStatus(`Training ${productLabels[productKey]}...`);
-        const rawSeries = seriesData[productKey];
-        if (rawSeries && rawSeries.length > 0) {
-          const prediction = await trainAndPredict(rawSeries, (epoch, loss) => {
-            if (abortRef.current) return;
-            // Update status every 5 epochs to reduce render thrashing
-            if (epoch % 5 === 0) {
-              setTrainingStatus(`Training ${productLabels[productKey]}... (Loss: ${loss.toFixed(4)})`);
-            }
-          });
-          if (abortRef.current) return;
-          newForecasts[productKey] = prediction;
-        }
-      }
-      if (!abortRef.current) {
-        setMlForecasts((prev) => ({ ...prev, ...newForecasts }));
-      }
-    } catch (e) {
-      console.error('Training failed', e);
-    } finally {
-      if (!abortRef.current) {
-        setIsTraining(false);
-        setTrainingStatus('');
+    // 1. Historical Data Traces
+    for (const productKey of productsToShow) {
+      const points = aggregatedSeries.get(productKey) || [];
+      if (points.length > 0) {
+        allTraces.push(buildSeriesLineTrace(points, productLabels[productKey], colors[productKey], 6, 2));
       }
     }
-  }, [seriesData, productsToShow, productLabels]);
 
-  const mlTraces = useMemo(() => {
-    const traces: Plotly.Data[] = [];
+    // 2. Forecast Traces (only for raw aggregation)
+    if (showForecast && seriesData && data.forecasts && aggregationMethod === 'raw') {
+      for (const productKey of productsToShow) {
+        const seriesKey = seriesMapping[productKey];
+        const fc = data.forecasts[seriesKey];
+        if (!fc || fc.length === 0) continue;
+
+        // Filter out forecast points that overlap with observed data
+        const observedDates = observedDateKeys.get(productKey);
+        const filteredFc = fc.filter((p) => !observedDates?.has(p.date));
+        
+        if (filteredFc.length === 0) continue;
+
+        const iv = data.forecastIntervals?.[seriesKey]?.[confidenceLevel];
+        const fcTraces = buildForecastTraces(
+          filteredFc,
+          iv,
+          colors[productKey] || palette.plotlyBrown,
+          productLabels[productKey],
+        );
+        allTraces.push(...fcTraces);
+      }
+    }
+
+    // 3. ML Forecast Traces
     for (const productKey of productsToShow) {
       const fc = mlForecasts[productKey];
       if (!fc) continue;
 
-      // Aggregate the forecast to merge into the current view
       const points = aggregateSeries(fc, aggregationMethod) || [];
-      
-      traces.push(
-        buildSeriesLineTrace(points, `Tensorflow (${productLabels[productKey]})`, colors[productKey], 6, 3, 'dot', 'lines',
-        ),
-      );
+      const t = buildSeriesLineTrace(points, `Tensorflow: ${productLabels[productKey]}`, colors[productKey], 6, 3, 'dot', 'lines');
+      (t as Plotly.Data & { showlegend: boolean }).showlegend = false;
+      allTraces.push(t);
     }
-    return traces;
-  }, [mlForecasts, productsToShow, aggregationMethod, colors, productLabels]);
 
-  const traces = useMemo(() => {
-    if (!aggregatedSeries.size) return [];
-
-    return productsToShow.map((productKey) => {
-      const points = aggregatedSeries.get(productKey) || [];
-      return buildSeriesLineTrace(points, productLabels[productKey], colors[productKey], 6, 2);
-    });
-  }, [productsToShow, aggregatedSeries, colors, productLabels]);
-
-  const forecastTrace = useMemo((): Plotly.Data[] | null => {
-    // Show forecasts only for raw (monthly) view
-    if (!showForecast || !seriesData || !forecasts || aggregationMethod !== 'raw') return null;
-
-    const all = buildForecastData(
-      productsToShow,
-      seriesMapping,
-      forecasts,
-      forecastIntervals,
-      observedDateKeys,
-      aggregationMethod,
-      colors,
-      palette,
-      productLabels,
-      confidenceLevel,
-    );
-
-    return all.length ? all : null;
+    return allTraces;
   }, [
-    showForecast,
-    seriesData,
     productsToShow,
-    seriesMapping,
+    aggregatedSeries,
     colors,
     productLabels,
-    forecasts,
-    forecastIntervals,
-    palette,
-    confidenceLevel,
+    showForecast,
+    seriesData,
+    data.forecasts,
+    data.forecastIntervals,
     aggregationMethod,
+    seriesMapping,
     observedDateKeys,
+    confidenceLevel,
+    palette,
+    mlForecasts,
   ]);
 
   if (!seriesData) {
@@ -287,22 +191,21 @@ export function TimeSeries<T extends string>({
             options={aggregationOptions}
           />
           <button
-            onClick={handleTrain}
+            onClick={hasMlForecasts ? clearForecasts : startTraining}
             disabled={isTraining}
-            className="badge badge-primary badge-button"
-            title={ML_TRAINING_MESSSAGES.BUTTON_TOOLTIP}
-            aria-label="Train ML Model"
+            className={`badge ${hasMlForecasts ? 'badge-secondary' : 'badge-primary'} badge-button`}
+            title={hasMlForecasts ? 'Remove generated forecasts from the plot' : ML_TRAINING_MESSSAGES.BUTTON_TOOLTIP}
+            aria-label={hasMlForecasts ? 'Remove forecasts' : 'Train ML Model'}
           >
             <>
               <img src="/neural.svg" alt="" className="train-icon" />
-              {isTraining ? trainingStatus || 'Training...' : 'Train the model'}
+              {isTraining ? trainingStatus || 'Training...' : hasMlForecasts ? 'Remove the forecasts' : 'Train the model'}
             </>
-          
           </button>
         </div>
 
         <PlotlyWrapper
-          data={[...traces, ...(forecastTrace || []), ...mlTraces]}
+          data={traces}
           layout={{
             height,
             title: { text: title, font: plotTitle },
