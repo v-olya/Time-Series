@@ -80,7 +80,7 @@ export function Heatmap({ data, indexKey, seriesMapping, options, title, height 
 
   return (
     <div className="group">
-      <div className="card plot-container" style={{ height }}>
+      <div className="card plot-container">
         <div className="plot-controls">
           <Select id="heatmap-metric" label="Metric:" value={metric} onChange={(v) => setMetric(v)} options={options} />
         </div>

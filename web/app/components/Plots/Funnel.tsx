@@ -58,7 +58,7 @@ export function Funnel({ data, mapping, channelOrder, labels, colors, titleHTML,
   }
 
   return (
-    <div className="card" style={{ height }}>
+    <div className="card">
       <div className="plot-controls">
         <Select
           id="funnel-year"

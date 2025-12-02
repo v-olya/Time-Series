@@ -128,7 +128,7 @@ export function WaterfallYearly({
   }
 
   return (
-    <div className="card" style={{ height }}>
+    <div className="card">
       <div className="plot-controls">
         <Select
           id="waterfall-product"

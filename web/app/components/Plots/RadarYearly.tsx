@@ -43,7 +43,7 @@ export function RadarYearly({ data, items, title, height = 520 }: Props) {
   }
 
   return (
-    <div className="card" style={{ height }}>
+    <div className="card">
       <PlotlyWrapper
         data={traces}
         layout={{

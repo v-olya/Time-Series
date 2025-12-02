@@ -89,7 +89,7 @@ export function Scatter({ data, baseSeriesKey, productOptions, baseLabel, height
   }
 
   return (
-    <div className="card pos-relative" style={{ height }}>
+    <div className="card pos-relative">
       {showPicker && (
         <span className="pos-absolute overlay right-corner">
           <Select
