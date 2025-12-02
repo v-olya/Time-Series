@@ -123,6 +123,10 @@ export function WaterfallYearly({
 
   const notEnoughYears = yearSet.length < 2;
 
+  if (notEnoughYears) {
+    return <div className="empty-state">Not enough years of data to compute yearly changes</div>;
+  }
+
   return (
     <div className="card" style={{ height }}>
       <div className="plot-controls">
@@ -134,23 +138,19 @@ export function WaterfallYearly({
           options={options}
         />
       </div>
-      {notEnoughYears ? (
-        <div className="empty-state">Not enough years of data to compute yearly changes</div>
-      ) : (
-        <PlotlyWrapper
-          data={[trace]}
-          layout={{
-            height,
-            title: { text: title, font: plotTitle },
-            xaxis: { showticklabels: false },
-            yaxis: { title: { text: 'Change (CZK)' } },
-            showlegend: false,
-            margin: movePlotDown(plotMargin),
-            annotations: topYearAnnotations,
-          }}
-          config={{ responsive: true }}
-        />
-      )}
+      <PlotlyWrapper
+        data={[trace]}
+        layout={{
+          height,
+          title: { text: title, font: plotTitle },
+          xaxis: { showticklabels: false },
+          yaxis: { title: { text: 'Change (CZK)' } },
+          showlegend: false,
+          margin: movePlotDown(plotMargin),
+          annotations: topYearAnnotations,
+        }}
+        config={{ responsive: true }}
+      />
     </div>
   );
 }

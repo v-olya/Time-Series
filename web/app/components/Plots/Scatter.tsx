@@ -84,6 +84,10 @@ export function Scatter({ data, baseSeriesKey, productOptions, baseLabel, height
   const xPad = (xMax - xMin) * 0.08 || 0.5;
   const yPad = (yMax - yMin) * 0.08 || 1;
 
+  if (traces.length === 0) {
+    return <div className="empty-state">No data available</div>;
+  }
+
   return (
     <div className="card pos-relative" style={{ height }}>
       {showPicker && (

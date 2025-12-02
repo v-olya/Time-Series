@@ -74,6 +74,10 @@ export function Heatmap({ data, indexKey, seriesMapping, options, title, height 
     [height, years, title],
   );
 
+  if (!flatValues.length) {
+    return <div className="empty-state">No data available for selected metric</div>;
+  }
+
   return (
     <div className="group">
       <div className="card plot-container" style={{ height }}>
@@ -81,11 +85,7 @@ export function Heatmap({ data, indexKey, seriesMapping, options, title, height 
           <Select id="heatmap-metric" label="Metric:" value={metric} onChange={(v) => setMetric(v)} options={options} />
         </div>
 
-        {flatValues.length ? (
-          <PlotlyWrapper data={plotData} layout={plotLayout} config={{ responsive: true }} />
-        ) : (
-          <div className="empty-state">No data available for selected metric</div>
-        )}
+        <PlotlyWrapper data={plotData} layout={plotLayout} config={{ responsive: true }} />
       </div>
     </div>
   );

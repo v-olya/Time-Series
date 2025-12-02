@@ -38,6 +38,10 @@ export function RadarYearly({ data, items, title, height = 520 }: Props) {
   const rMin = flat.length ? Math.min(...flat) : 0;
   const rMax = flat.length ? Math.max(...flat) : 1;
 
+  if (traces.length === 0) {
+    return <div className="empty-state">No data available</div>;
+  }
+
   return (
     <div className="card" style={{ height }}>
       <PlotlyWrapper

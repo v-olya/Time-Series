@@ -153,13 +153,7 @@ export function TimeSeries<T extends string>({
   ]);
 
   if (!seriesData) {
-    return (
-      <div className="group">
-        <div className="card plot-container" style={{ height }}>
-          <div className="empty-state" />
-        </div>
-      </div>
-    );
+    return <div className="empty-state">No data available</div>;
   }
 
   const productOptions: ProductOption[] = productKeys.map((key) => ({

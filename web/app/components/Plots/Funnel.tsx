@@ -53,6 +53,10 @@ export function Funnel({ data, mapping, channelOrder, labels, colors, titleHTML,
 
   const showEmptyState = !seriesData || yearSet.length === 0;
 
+  if (showEmptyState || !trace) {
+    return <div className="empty-state">No data available</div>;
+  }
+
   return (
     <div className="card" style={{ height }}>
       <div className="plot-controls">
@@ -64,22 +68,18 @@ export function Funnel({ data, mapping, channelOrder, labels, colors, titleHTML,
           options={yearSet.map((y) => ({ value: y, label: y }))}
         />
       </div>
-      {showEmptyState || !trace ? (
-        <div className="empty-state">No data available</div>
-      ) : (
-        <PlotlyWrapper
-          data={[trace]}
-          layout={{
-            height,
-            title: { text: titleHTML || '<b>Prices Funnel</b>', font: plotTitle },
-            yaxis: { title: { text: '' }, showticklabels: false, showline: false, zeroline: false },
-            xaxis: { title: { text: '' }, showline: false, zeroline: false },
-            margin: movePlotDown(plotMargin),
-            showlegend: false,
-          }}
-          config={{ responsive: true }}
-        />
-      )}
+      <PlotlyWrapper
+        data={[trace]}
+        layout={{
+          height,
+          title: { text: titleHTML || '<b>Prices Funnel</b>', font: plotTitle },
+          yaxis: { title: { text: '' }, showticklabels: false, showline: false, zeroline: false },
+          xaxis: { title: { text: '' }, showline: false, zeroline: false },
+          margin: movePlotDown(plotMargin),
+          showlegend: false,
+        }}
+        config={{ responsive: true }}
+      />
     </div>
   );
 }
