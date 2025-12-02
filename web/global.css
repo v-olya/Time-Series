@@ -329,6 +329,11 @@ select {
   display: flex;
   justify-content: space-between;
   z-index: 99;
+  pointer-events: none;
+}
+
+.app-nav > * {
+  pointer-events: auto;
 }
 
 .app-nav div a {
