@@ -197,11 +197,11 @@ export function buildForecastTraces(
     y: points.map((p) => p.value),
     type: 'scatter' as const,
     mode: 'lines' as const,
-    name: name ? `${name} (forecast)` : 'Forecast',
+    name: `SARIMAX: ${name}`,
     line: { color: color || '#000', width: 2, dash: 'dash' },
     showlegend: false,
     legendgroup: name ?? 'forecast',
-    hovertemplate: `%{x|%b %Y} ${name ? name + ' ' : ''}forecast: %{y:.2f}<extra></extra>`,
+    hovertemplate: `%{x|%b %Y} SARIMAX: ${name} %{y:.2f}<extra></extra>`,
   } as Plotly.Data;
 
   if (!interval95 || interval95.length === 0) return [forecastLine];
