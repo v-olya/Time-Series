@@ -1,6 +1,8 @@
 # Time series visualizations
 
-The App for real-life data analysis and visualizations. See `web/` for Front End and `_preprocess/` for python preprocessing scripts.
+The App for real-life data analysis and forecasting (SARIMAX model is chosen separately for each data column based on the lowest AIC). 
+
+See `web/` for Front End and `_preprocess/` for python preprocessing scripts.
 
 ## About
 This repository demonstrates visualizations for a set of time series that come from National Open Data Catalogue;  you can download the full dataset from <a href="https://data.gov.cz/dataset?iri=https%3A%2F%2Fdata.gov.cz%2Fzdroj%2Fdatov%C3%A9-sady%2F00025593%2F02f3decfbfdabecebd4c0548f55390a0">data.gov.cz</a>.
@@ -32,4 +34,5 @@ A simple home page with an overview of existing data entities:
 
 Category EDA with Plotly: TimeSeries, Scatter and Radar plots, 2D and 3D Heatmaps, Waterfall and Funnel charts.
 
-![Screenshot_30-11-2025_232047_localhost](https://github.com/user-attachments/assets/0849414a-379f-4a68-ba27-b16b12817657)
+![Screenshot_1-12-2025_225533_localhost](https://github.com/user-attachments/assets/fab59e50-7e7b-48a1-bb2b-c44027b52477)
+
