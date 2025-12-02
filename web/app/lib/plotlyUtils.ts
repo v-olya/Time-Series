@@ -1,6 +1,5 @@
 import type { TimePoint } from './types';
-import { getPalette, averageYear, hexToRgba } from './helpers';
-import type { FlourProductKey } from './const';
+import { averageYear, hexToRgba } from './helpers';
 import type * as Plotly from 'plotly.js';
 import type { ScatterData } from 'plotly.js';
 import { PlotParams } from 'react-plotly.js';
@@ -110,46 +109,18 @@ export function averageForYear(points: TimePoint[] | undefined, year: string) {
   return vals.reduce((s, v) => s + v, 0) / vals.length;
 }
 
-// Radar (scatterpolar) traces for a set of products
-export function buildRadarTraces(
-  seriesMap: Record<string, TimePoint[] | undefined>,
-  productSeriesMapping: Record<FlourProductKey, string>,
-  productLabels: Record<FlourProductKey, string>,
-  years: number[],
-  palette?: Record<string, string>,
-): Plotly.ScatterData[] {
-  const pal = palette || getPalette();
-  const prodKeys = Object.keys(productSeriesMapping) as FlourProductKey[];
-  const paletteVals = Object.values(pal);
-  return prodKeys.map((k, idx) => {
-    const seriesKey = productSeriesMapping[k];
-    const pts = seriesMap[seriesKey] as TimePoint[] | undefined;
-    const r = averageYear(pts, years).map((v) => (v === null ? 0 : (v as number)));
-    const color = paletteVals[idx % paletteVals.length] || pal.plotlyBrown;
-    return {
-      type: 'scatterpolar',
-      r,
-      theta: years.map(String),
-      fill: 'toself',
-      name: productLabels[k] || String(k),
-      marker: { color },
-    } as Plotly.ScatterData;
-  });
-}
-
-// Generic builder for radar traces when callers provide explicit items with label and color
+// Generic builder (a caller provide explicit items with label and color)
 export type RadarItem = { seriesKey: string; label: string; color?: string };
 export function buildCustomRadarTraces(
   seriesMap: Record<string, TimePoint[] | undefined>,
   items: RadarItem[],
   years: number[],
-  palette?: Record<string, string>,
+  palette: Record<string, string>,
 ): Plotly.ScatterData[] {
-  const pal = palette || getPalette();
   return items.map((it, idx) => {
     const pts = seriesMap[it.seriesKey] as TimePoint[] | undefined;
     const r = averageYear(pts, years).map((v) => (v === null ? 0 : (v as number)));
-    const color = it.color || Object.values(pal)[idx % Object.values(pal).length] || pal.plotlyBrown;
+    const color = it.color || Object.values(palette)[idx % Object.values(palette).length] || palette.plotlyBrown;
     return {
       type: 'scatterpolar',
       r,
