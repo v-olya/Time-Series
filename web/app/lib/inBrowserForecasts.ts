@@ -5,6 +5,8 @@ import { ML_TRAINING_MESSSAGES } from './const';
 
 const WINDOW_SIZE = 12; // Look 1 year back
 const PREDICTION_HORIZON = 6;
+// Keep modest to avoid long UI freezes
+const EPOCHS = 50;
 
 function createDataset(data: number[], windowSize: number) {
   const X = [];
